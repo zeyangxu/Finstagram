@@ -4,7 +4,8 @@
   "description": "this is a project for CS-UY 3083 course",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon index.js"
+    "dev": "nodemon index.js",
+    "client": "npm start --prefix client"
   },
   "keywords": [],
   "author": "",
