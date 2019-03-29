@@ -14,9 +14,9 @@ export default function Feed({ img_url, owner_name, date, description }) {
           <Card.Description>{description}</Card.Description>
         </Card.Content>
         <Card.Content extra>
-          <a>
+          <span>
             <Icon name="comments outline" />
-          </a>
+          </span>
         </Card.Content>
       </Card>
     </div>

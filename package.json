@@ -1,17 +1,22 @@
 {
-  "name": "Finstagram",
+  "name": "finstagram",
   "version": "1.0.0",
   "description": "this is a project for CS-UY 3083 course",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon index.js",
-    "client": "npm start --prefix client"
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "client": "npm start --prefix client",
+    "server": "nodemon index.js",
+    "start": "node index.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.16.4"
+    "bcrypt": "^3.0.5",
+    "concurrently": "^4.1.0",
+    "express": "^4.16.4",
+    "mysql": "^2.16.0"
   },
   "devDependencies": {
     "nodemon": "^1.18.10"

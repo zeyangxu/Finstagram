@@ -1,12 +1,6 @@
 import React, { Component } from 'react';
-import {
-  Grid,
-  Checkbox,
-  Segment,
-  Button,
-  Form,
-  Header
-} from 'semantic-ui-react';
+import { Grid, Segment, Button, Form, Header } from 'semantic-ui-react';
+import { Link } from 'react-router-dom';
 
 export default class Login extends Component {
   render() {
@@ -29,25 +23,22 @@ export default class Login extends Component {
               >
                 Finstagram
               </Header>
-              <Header textAlign="center">
-                <Header.Subheader style={{ fontSize: '20px' }}>
-                  Signin
-                </Header.Subheader>
-              </Header>
+
               <Form>
                 <Form.Field>
-                  <label>Email</label>
-                  <input placeholder="abc123@abc.com" />
+                  <label>User name</label>
+                  <input placeholder="abc123" />
                 </Form.Field>
                 <Form.Field>
                   <label>Password</label>
                   <input />
                 </Form.Field>
                 <Form.Field>
-                  <Checkbox label="I agree to the Terms and Conditions" />
+                  don't have an account?
+                  <Link to="/signup"> sign up</Link>
                 </Form.Field>
                 <Button color="blue" fluid type="submit">
-                  Submit
+                  Sign in
                 </Button>
               </Form>
             </Segment>
