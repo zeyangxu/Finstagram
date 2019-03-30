@@ -1,7 +1,14 @@
 const express = require('express'),
   bcrypt = require('bcrypt'),
   router = express.Router(),
-  conn = require('./conn');
+  debug = require('debug'),
+  conn = require('./conn'),
+  bunyan = require('bunyan');
+
+const log = bunyan.createLogger({ name: 'auth' });
+
+const bcrypt_debug = debug('bcrypt'),
+  mysql_debug = debug('mysql');
 
 // @Login endpoint
 // request type
@@ -9,18 +16,18 @@ const express = require('express'),
 // :password String
 router.post('/', (req, res) => {
   const { username, password } = req.body;
-  console.log('username: ' + username);
-  console.log('password: ' + password);
+  log.info({ username: username });
+  log.info({ password: password });
   conn.query(
     `SELECT password FROM Person WHERE username='${username}'`,
     (err, result) => {
-      if (err) console.error(err);
-      console.log(result);
+      if (err) mysql_debug(err);
+      log.info({ result: result });
       if (result[0]) {
         // authenticate password
         bcrypt.compare(password, result[0].password, (err, pass) => {
           if (err) {
-            console.error(err);
+            bcrypt_debug(err);
           }
           if (pass) {
             res.send('password is correct');

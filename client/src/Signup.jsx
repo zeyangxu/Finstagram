@@ -12,20 +12,45 @@ import {
 import { Link } from 'react-router-dom';
 
 export default class Signup extends Component {
+  // * Production version
+  // constructor(props) {
+  //   super(props);
+  //   this.state = {
+  //     username: '',
+  //     errUsername: false,
+  //     password: '',
+  //     errPassword: false,
+  //     fname: '',
+  //     errFname: false,
+  //     lname: '',
+  //     errLname: false,
+  //     re_password: '',
+  //     errRepassword: false,
+  //     termsIsChecked: false,
+  //     passwordIsValid: true,
+  //     showWarningMsg: false,
+  //     inputIsValid: true,
+  //     errMsgList: []
+  //   };
+  //   this.handleInputChange = this.handleInputChange.bind(this);
+  //   this.postAuth = this.postAuth.bind(this);
+  // }
+
+  // * Dev version
   constructor(props) {
     super(props);
     this.state = {
-      username: '',
+      username: 'zebxu',
       errUsername: false,
-      password: '',
+      password: '123',
       errPassword: false,
-      fname: '',
+      fname: 'zeyang',
       errFname: false,
-      lname: '',
+      lname: 'xu',
       errLname: false,
-      re_password: '',
+      re_password: '123',
       errRepassword: false,
-      termsIsChecked: false,
+      termsIsChecked: true,
       passwordIsValid: true,
       showWarningMsg: false,
       inputIsValid: true,
@@ -35,7 +60,7 @@ export default class Signup extends Component {
     this.postAuth = this.postAuth.bind(this);
   }
 
-  validate = async () => {
+  validate = () => {
     const {
       username,
       password,
@@ -60,7 +85,7 @@ export default class Signup extends Component {
     let emptyStrFlag = false;
     for (const key in data) {
       if (data[key].length === 0) {
-        await this.setState({ [map[key]]: true });
+        this.setState({ [map[key]]: true });
         emptyStrFlag = true;
       }
     }
@@ -75,35 +100,52 @@ export default class Signup extends Component {
       errMsgList.push('you have to accept terms and condition');
     }
 
+    // check repeat password
     if (!passwordIsValid) {
       isValid = false;
       errMsgList.push("password doesn't match");
     }
-    await this.setState({ errMsgList: errMsgList, inputIsValid: isValid });
+
+    // add more validation rules...
+    // turn the isValid flag and push error message to errMsgList
+
+    this.setState({ errMsgList: errMsgList, inputIsValid: isValid });
   };
 
   postAuth = async () => {
     const { username, password, fname, lname, inputIsValid } = this.state;
 
     // validate input
-    await this.validate();
+    this.validate();
 
     if (inputIsValid) {
-      console.log('input is valid');
-      this.setState({ showWarningMsg: false });
-      const res = await fetch('/api/register', {
-        method: 'POST',
-        mode: 'cors',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password, fname, lname })
-      });
-      if (res.status(201)) {
-        this.props.history.push('/');
-      } else {
-        console.log('post sign up info failed');
+      try {
+        const res = await fetch('/api/register', {
+          method: 'POST',
+          mode: 'cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password, fname, lname })
+        });
+        const json = await res.json();
+        if (res.status === 201) {
+          this.props.history.push('/');
+        } else {
+          let err_list = [];
+          const error_map = {
+            ER_DUP_ENTRY: 'user name already exists'
+          };
+          err_list.push(error_map[json.error]);
+          this.setState({
+            showWarningMsg: true,
+            errMsgList: err_list,
+            errUsername: true
+          });
+          console.log(json.error);
+        }
+      } catch (err) {
+        console.error(err);
       }
     } else {
-      console.log('input not valid');
       this.setState({
         showWarningMsg: true
       });
@@ -127,9 +169,11 @@ export default class Signup extends Component {
       this.setState({ passwordIsValid: false });
     }
   };
+
   toggle = () => {
     this.setState({ termsIsChecked: !this.state.termsIsChecked });
   };
+
   render() {
     const {
       username,

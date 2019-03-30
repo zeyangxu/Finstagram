@@ -6,15 +6,18 @@
   "scripts": {
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "client": "npm start --prefix client",
-    "server": "nodemon index.js",
-    "start": "node index.js"
+    "server": "nodemon index.js | bunyan",
+    "start": "node index.js",
+    "debug": "DEBUG=* node index.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^3.0.5",
+    "bunyan": "^1.8.12",
     "concurrently": "^4.1.0",
+    "debug": "^4.1.1",
     "express": "^4.16.4",
     "mysql": "^2.16.0"
   },

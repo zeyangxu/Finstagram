@@ -1,4 +1,5 @@
-const mysql = require('mysql');
+const mysql = require('mysql'),
+  debug = require('debug')('mysql');
 
 const conn = mysql.createConnection({
   host: 'localhost',
@@ -9,9 +10,9 @@ const conn = mysql.createConnection({
 });
 conn.connect(err => {
   if (err) {
-    console.error(err);
+    debug(err);
   }
-  console.log('database connected!');
+  debug('database connected!');
 });
 
 module.exports = conn;
