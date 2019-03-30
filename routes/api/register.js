@@ -38,9 +38,9 @@ router.post('/', (req, res, next) => {
       if (err) {
         mysql_debug(err);
         if (err.code === 'ER_DUP_ENTRY') {
-          res.status(400).json({ success: false, error: err.code });
+          res.status(401).json({ success: false, error: err.code });
         } else {
-          res.status(400).json({ success: false, error: 'database error' });
+          res.status(401).json({ success: false, error: 'database error' });
         }
         next(err);
       } else {

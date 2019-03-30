@@ -53,7 +53,6 @@ export default class Signup extends Component {
       termsIsChecked: true,
       passwordIsValid: true,
       showWarningMsg: false,
-      inputIsValid: true,
       errMsgList: []
     };
     this.handleInputChange = this.handleInputChange.bind(this);
@@ -109,16 +108,15 @@ export default class Signup extends Component {
     // add more validation rules...
     // turn the isValid flag and push error message to errMsgList
 
-    this.setState({ errMsgList: errMsgList, inputIsValid: isValid });
+    this.setState({ errMsgList: errMsgList });
+    return isValid;
   };
 
   postAuth = async () => {
-    const { username, password, fname, lname, inputIsValid } = this.state;
+    const { username, password, fname, lname } = this.state;
 
     // validate input
-    this.validate();
-
-    if (inputIsValid) {
+    if (this.validate()) {
       try {
         const res = await fetch('/api/register', {
           method: 'POST',

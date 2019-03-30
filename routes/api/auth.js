@@ -30,13 +30,13 @@ router.post('/', (req, res) => {
             bcrypt_debug(err);
           }
           if (pass) {
-            res.send('password is correct');
+            res.status(201).json({ success: true });
           } else {
-            res.send('incorrect password');
+            res.status(401).json({ success: false, error: 'WRONG_PASS' });
           }
         });
       } else {
-        res.send("username doesn't exist");
+        res.status(401).json({ success: false, error: 'NO_USER' });
       }
     }
   );
