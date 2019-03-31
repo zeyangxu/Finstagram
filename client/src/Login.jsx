@@ -8,9 +8,11 @@ import {
   Message,
   Icon
 } from 'semantic-ui-react';
-import { Link } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
+import { withCookies, Cookies } from 'react-cookie';
+import PropTypes from 'prop-types';
 
-export default class Login extends Component {
+class Login extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -21,6 +23,15 @@ export default class Login extends Component {
       err_msg: ''
     };
   }
+  componentDidMount() {
+    const { cookies } = this.props;
+    const sessionID = cookies.cookies.sessionID;
+    if (sessionID) {
+      console.log(sessionID);
+      this.cookieAutoAuth(sessionID);
+    }
+  }
+
   validate = () => {
     const { username, password } = this.state;
     let isValid = true;
@@ -30,9 +41,16 @@ export default class Login extends Component {
     }
     return isValid;
   };
-
+  cookieAutoAuth = async sessionID => {
+    // post to auth.js with cookies
+    const res = await fetch(`/api/auth/${sessionID}`);
+    if (res.status === 201) {
+      this.props.history.push('/');
+    }
+  };
   postAuth = async () => {
     const { username, password } = this.state;
+    const { cookies } = this.props;
 
     if (this.validate()) {
       try {
@@ -44,6 +62,7 @@ export default class Login extends Component {
         });
         const json = await res.json();
         if (res.status === 201) {
+          cookies.set('sessionID', json.session, { maxAge: 5000 });
           this.props.history.push('/');
         } else {
           const error_map = {
@@ -129,3 +148,7 @@ export default class Login extends Component {
     );
   }
 }
+Login.propTypes = {
+  cookies: PropTypes.instanceOf(Cookies).isRequired
+};
+export default withCookies(Login);

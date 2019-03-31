@@ -24,6 +24,7 @@ const conn = require('./conn');
 // :lname String
 router.post('/', (req, res, next) => {
   const { password, username, fname, lname } = req.body;
+  log.info({ cookie: req.session.cookie, id: req.session.id });
   // encrypt received password
   bcrypt.hash(password, saltRounds, (err, hash) => {
     if (err) {
@@ -38,13 +39,19 @@ router.post('/', (req, res, next) => {
       if (err) {
         mysql_debug(err);
         if (err.code === 'ER_DUP_ENTRY') {
+          log.info('Bad Request: duplicate username');
           res.status(401).json({ success: false, error: err.code });
         } else {
-          res.status(401).json({ success: false, error: 'database error' });
+          log.info('Bad Request: unknown database error');
+          res
+            .status(401)
+            .json({ success: false, error: 'unknown database error' });
         }
         next(err);
       } else {
-        res.status(201).json(req.body);
+        res
+          .status(201)
+          .json({ success: true, req: req.body, sessionID: req.session.id });
       }
     });
   });

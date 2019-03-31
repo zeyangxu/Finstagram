@@ -132,7 +132,11 @@ export default class Signup extends Component {
           const error_map = {
             ER_DUP_ENTRY: 'user name already exists'
           };
-          err_list.push(error_map[json.error]);
+          if (error_map[json.error]) {
+            err_list.push(error_map[json.error]);
+          } else {
+            err_list.push(json.error);
+          }
           this.setState({
             showWarningMsg: true,
             errMsgList: err_list,

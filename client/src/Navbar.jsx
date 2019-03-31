@@ -13,6 +13,9 @@ import {
   Form
 } from 'semantic-ui-react';
 import { NavLink, withRouter } from 'react-router-dom';
+import { withCookies, Cookies } from 'react-cookie';
+import PropTypes from 'prop-types';
+import { compose } from 'recompose';
 
 class Navbar extends Component {
   state = {
@@ -58,6 +61,21 @@ class Navbar extends Component {
     this.setState({ search_input: value });
   };
 
+  logout = async () => {
+    console.log('log out start');
+    const { cookies } = this.props;
+    const sessionID = cookies.cookies.sessionID;
+    const res = await fetch(`/api/auth/${sessionID}`, {
+      method: 'DELETE',
+      mode: 'cors'
+    });
+    console.log('log out');
+    if (res.status === 400) {
+      alert('session not found');
+    }
+    this.props.history.push('/login');
+  };
+
   render() {
     const {
       activeItem,
@@ -87,6 +105,17 @@ class Navbar extends Component {
             </Menu.Item>
 
             <Menu.Menu position="right">
+              <Responsive minWidth={768}>
+                <Menu.Item
+                  style={{ color: '#000', marginTop: '1rem' }}
+                  name="fav"
+                  active={activeItem === 'fav'}
+                  onClick={this.logout}
+                  position="right"
+                >
+                  Log out
+                </Menu.Item>
+              </Responsive>
               <Responsive minWidth={768}>
                 <Menu.Item
                   as={NavLink}
@@ -236,5 +265,10 @@ class Navbar extends Component {
     );
   }
 }
-
-export default withRouter(Navbar);
+Navbar.propTypes = {
+  cookies: PropTypes.instanceOf(Cookies).isRequired
+};
+export default compose(
+  withRouter,
+  withCookies
+)(Navbar);

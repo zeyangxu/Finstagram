@@ -6,12 +6,9 @@ const express = require('express'),
 const conn = require('./conn');
 const log = bunyan.createLogger({ name: 'db' });
 
-router.get('/', (req, res) => {
-  conn.query(`SELECT * FROM Person`, (err, result) => {
-    if (err) debug(err);
-    log.info({ conn_result: result[0].username });
-    res.send(result);
-  });
+router.get('/test', (req, res) => {
+  log.info({ cookie: req.session.cookie });
+  res.status(201).json({ username: req.session.username });
 });
 
 module.exports = router;
