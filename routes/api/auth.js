@@ -2,7 +2,7 @@ const express = require('express'),
   bcrypt = require('bcrypt'),
   router = express.Router(),
   debug = require('debug'),
-  conn = require('./conn'),
+  conn = require('../../conn'),
   bunyan = require('bunyan');
 
 // logger

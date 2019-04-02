@@ -8,7 +8,7 @@ const express = require('express'),
 // body parser
 app.use(express.json());
 
-const conn = require('./routes/api/conn');
+const conn = require('./conn');
 
 const session_store = new MySqlStore(
   {
