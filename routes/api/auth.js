@@ -5,12 +5,14 @@ const express = require('express'),
   conn = require('./conn'),
   bunyan = require('bunyan');
 
+// logger
 const log = bunyan.createLogger({ name: 'auth' });
 
+// debugger
 const bcrypt_debug = debug('bcrypt'),
   mysql_debug = debug('mysql');
 
-// @Log out endpoint
+// @Log-out endpoint
 // delete
 router.delete('/:id', (req, res) => {
   const id = req.params.id;
@@ -31,7 +33,7 @@ router.delete('/:id', (req, res) => {
   });
 });
 
-// @Login(with session id) endpoint
+// @Login check session endpoint
 // get
 router.get('/:id', (req, res) => {
   const id = req.params.id;
@@ -58,7 +60,7 @@ router.get('/:id', (req, res) => {
   );
 });
 
-// @Login endpoint
+// @Login with username and password endpoint
 // post
 // :username String
 // :password String

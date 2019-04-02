@@ -56,11 +56,11 @@ class Navbar extends Component {
       window.scroll(0, 0);
     }
   };
-
+  // update search input state
   onChange = (e, { value }) => {
     this.setState({ search_input: value });
   };
-
+  // delete session id stored in the server
   logout = async () => {
     console.log('log out start');
     const { cookies } = this.props;

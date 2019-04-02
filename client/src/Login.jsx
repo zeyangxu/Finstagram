@@ -8,9 +8,10 @@ import {
   Message,
   Icon
 } from 'semantic-ui-react';
-import { Link, Redirect } from 'react-router-dom';
+import { Link, withRouter } from 'react-router-dom';
 import { withCookies, Cookies } from 'react-cookie';
 import PropTypes from 'prop-types';
+import { compose } from 'recompose';
 
 class Login extends Component {
   constructor(props) {
@@ -20,18 +21,10 @@ class Login extends Component {
       password: '',
       isValidInput: false,
       showWarningMsg: false,
-      err_msg: ''
+      err_msg: '' // empty input or unauthorized
     };
   }
-  componentDidMount() {
-    const { cookies } = this.props;
-    const sessionID = cookies.cookies.sessionID;
-    if (sessionID) {
-      console.log(sessionID);
-      this.cookieAutoAuth(sessionID);
-    }
-  }
-
+  // validate user input when click submit
   validate = () => {
     const { username, password } = this.state;
     let isValid = true;
@@ -41,17 +34,12 @@ class Login extends Component {
     }
     return isValid;
   };
-  cookieAutoAuth = async sessionID => {
-    // post to auth.js with cookies
-    const res = await fetch(`/api/auth/${sessionID}`);
-    if (res.status === 201) {
-      this.props.history.push('/');
-    }
-  };
+  // send user input to server authentication system
   postAuth = async () => {
     const { username, password } = this.state;
-    const { cookies } = this.props;
+    const { cookies, AppAuth } = this.props;
 
+    // first check if the user input is valid
     if (this.validate()) {
       try {
         const res = await fetch('/api/auth', {
@@ -63,6 +51,7 @@ class Login extends Component {
         const json = await res.json();
         if (res.status === 201) {
           cookies.set('sessionID', json.session, { maxAge: 5000 });
+          await AppAuth();
           this.props.history.push('/');
         } else {
           const error_map = {
@@ -82,13 +71,17 @@ class Login extends Component {
       this.setState({ showWarningMsg: true });
     }
   };
+  // input validation
   handleInput = e => {
     const target = e.target;
     const name = target.name;
     this.setState({ [name]: target.value });
   };
+
   render() {
     const { username, password, showWarningMsg, err_msg } = this.state;
+    console.log('login render()');
+    const { from } = this.props.location.state || { from: { pathname: '/' } };
     return (
       <div>
         <Grid centered columns={3} style={{ paddingTop: '5rem' }}>
@@ -151,4 +144,7 @@ class Login extends Component {
 Login.propTypes = {
   cookies: PropTypes.instanceOf(Cookies).isRequired
 };
-export default withCookies(Login);
+export default compose(
+  withCookies,
+  withRouter
+)(Login);

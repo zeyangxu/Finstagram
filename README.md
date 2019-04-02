@@ -9,29 +9,38 @@ this is a project for CS-UY 3083 course
 - Semantic-ui-react as css component
 - MySQL as database
 
+## Database structure
+
+![](./static/RelationalSchema.jpg)
+
+## Authentication System
+
+This app use session based authentication
+
+![](https://cdn-images-1.medium.com/max/1600/1*Hg1gUTXN5E3Nrku0jWCRow.png)
+
 ## Todo
 
-- [ ] Store session id in cookie
+- [x] Store session id in cookie
 - [ ] React-router protected route
+- [x] Not storing session-id of all request
 
-### features
+### Features
 
 - [x] Sign up system
 - [x] Log in system
-- [ ] Session
+- [x] Session
 - [ ] Upload photo
 - [ ] View photo and data
 - [ ] Create close friend group
 
 ## Notes
 
-### Token-based authentication
-
-#### JWT (JSON Web Token)
+### JWT (JSON Web Token)
 
 - Store token only on client side, more scalable
 
-### Session-based authentication
+### Session based authentication
 
 #### First time login
 
