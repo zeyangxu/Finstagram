@@ -45,12 +45,15 @@ app.use(
 const log = bunyan.createLogger({ name: 'express' });
 
 // routes
-const auth = require('./routes/api/auth');
-const register = require('./routes/api/register');
-const db = require('./routes/api/db');
+const auth = require('./routes/api/auth'),
+  register = require('./routes/api/register'),
+  upload = require('./routes/api/upload'),
+  db = require('./routes/api/db');
+
 app.use('/api/auth', auth);
 app.use('/api/register', register);
 app.use('/api/db', db);
+app.use('/api/upload', upload);
 
 // start the server
 const port = process.env.PORT || 5000;

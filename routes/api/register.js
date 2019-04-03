@@ -29,8 +29,11 @@ router.post('/', (req, res, next) => {
   bcrypt.hash(password, saltRounds, (err, hash) => {
     if (err) {
       bcrypt_debug(err);
-      res.status(500).json({ success: false, reason: 'hash failed' });
-      next(err);
+      res
+        .status(500)
+        .contentType('text/plain')
+        .end('Server Error');
+      return next(err);
     }
     const query = `INSERT INTO Person (username, password, fname, lname) VALUES ('${username}', '${hash}', '${fname}', '${lname}')`;
     log.info({ query: query });
@@ -40,14 +43,14 @@ router.post('/', (req, res, next) => {
         mysql_debug(err);
         if (err.code === 'ER_DUP_ENTRY') {
           log.info('Bad Request: duplicate username');
-          res.status(401).json({ success: false, error: err.code });
+          res.status(403).json({ success: false, error: err.code });
         } else {
           log.info('Bad Request: unknown database error');
           res
-            .status(401)
+            .status(403)
             .json({ success: false, error: 'unknown database error' });
         }
-        next(err);
+        return next(err);
       } else {
         res
           .status(201)

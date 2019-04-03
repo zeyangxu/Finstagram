@@ -64,7 +64,7 @@ class Login extends Component {
           });
         }
       } catch (err) {
-        console.log(err);
+        console.error(err);
       }
     } else {
       // show error message
@@ -80,8 +80,6 @@ class Login extends Component {
 
   render() {
     const { username, password, showWarningMsg, err_msg } = this.state;
-    console.log('login render()');
-    const { from } = this.props.location.state || { from: { pathname: '/' } };
     return (
       <div>
         <Grid centered columns={3} style={{ paddingTop: '5rem' }}>

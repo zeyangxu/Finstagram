@@ -14,12 +14,16 @@ const bcrypt_debug = debug('bcrypt'),
 
 // @Log-out endpoint
 // delete
-router.delete('/:id', (req, res) => {
+router.delete('/:id', (req, res, next) => {
   const id = req.params.id;
   conn.query(`DELETE FROM sessions WHERE session_id='${id}'`, (err, result) => {
     if (err) {
       mysql_debug(err);
-      next(err);
+      res
+        .status(500)
+        .contentType('text/plain')
+        .end();
+      return next(err);
     }
     log.info({ function: 'sql remove session', sessionID: id, result: result });
     // const r = JSON.parse(result);

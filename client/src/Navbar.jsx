@@ -71,7 +71,7 @@ class Navbar extends Component {
     });
     console.log('log out');
     if (res.status === 400) {
-      alert('session not found');
+      console.log('session not found');
     }
     this.props.history.push('/login');
   };

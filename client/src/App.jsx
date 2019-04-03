@@ -9,7 +9,6 @@ import { compose } from 'recompose';
 
 class App extends Component {
   constructor(props) {
-    console.log('app constructor()');
     super(props);
     this.state = {
       isAuth: true
@@ -17,7 +16,7 @@ class App extends Component {
   }
 
   async componentWillMount() {
-    console.log('app componentDidMount()');
+    console.log('app componentWillMount');
     this.authWithSession();
   }
   // call fetch method with session id in cookies
@@ -25,7 +24,7 @@ class App extends Component {
     const { cookies } = this.props;
     const sessionID = cookies.cookies.sessionID;
     if (sessionID) {
-      console.log({ sessionID });
+      console.log('app auth', sessionID);
       const auth = await this.authFetchPost(sessionID);
       if (auth) {
         console.log('auth success');
@@ -36,6 +35,8 @@ class App extends Component {
         this.props.history.push('/login');
         console.log('session invalid');
       }
+    } else {
+      this.setState({ isAuth: false });
     }
   };
   // send session id to server auth service
@@ -50,7 +51,6 @@ class App extends Component {
     }
   };
   render() {
-    console.log('app render()');
     const { isAuth } = this.state;
     return (
       <React.Fragment>
@@ -65,19 +65,9 @@ class App extends Component {
           <Route path="/signup" render={props => <Signup {...props} />} />
           <Route
             path="/"
-            render={props => {
-              if (isAuth) {
-                console.log('app route isAuth=true');
-                return <Main {...props} />;
-              } else {
-                console.log('app route isAuth=false');
-                return (
-                  <Redirect
-                    to={{ pathname: '/login', state: { from: props.location } }}
-                  />
-                );
-              }
-            }}
+            render={props =>
+              isAuth ? <Main {...props} /> : <Redirect to="/login" />
+            }
           />
         </Switch>
       </React.Fragment>
