@@ -22,7 +22,7 @@ class FeedList extends Component {
         this.setState({ photoList: json.data });
       } else {
         if (res.status === 400 && json.error === 'session id not found') {
-          this.history.push('/');
+          this.props.history.push('/');
         }
         console.log('fetch photo fail', json.error);
       }
@@ -32,11 +32,10 @@ class FeedList extends Component {
   };
   // perform side effect after user delete or upload
   componentDidUpdate(prevProps, prevState) {
-    this.fetchPhoto();
-    // console.log('FeedList componentDidUpdate side effect');
-    // if (prevProps.uploading === true) {
-    //   console.log('FeedList componentDidUpdate side effect fetch');
-    // }
+    if (prevProps.loading !== this.props.loading) {
+      this.fetchPhoto();
+      console.log('FeedList componentDidUpdate side effect fetch');
+    }
   }
   // handle delete button click event
   onDeleteBtnClick = async id => {
@@ -47,6 +46,7 @@ class FeedList extends Component {
     });
     const json = await res.json();
     if (res.status === 200) {
+      window.scrollTo(0, 0);
       console.log('delete success');
     } else {
       console.error(json.error);
@@ -66,8 +66,8 @@ class FeedList extends Component {
                   key={i.photoID}
                   photoID={i.photoID}
                   owner_name="zeb"
-                  date="xx-xx"
-                  description="hello"
+                  date={i.timestamp}
+                  description={i.caption}
                   deleteHandler={this.onDeleteBtnClick}
                 />
               ))}

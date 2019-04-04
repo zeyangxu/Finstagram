@@ -64,13 +64,14 @@ router.post('/photo', (req, res, next) => {
             func: 'finduser callback',
             file_extension: path.extname(req.file.originalname),
             sessionID: req.body.active_session_id,
+            description: req.body.description,
             username: username,
             file: req.file
           });
           conn.query(
-            `INSERT INTO Photo (photoID, photoOwner, filePath) VALUES (NULL, '${username}', '${
+            `INSERT INTO Photo (photoID, photoOwner, filePath, caption) VALUES (NULL, '${username}', '${
               req.file.path
-            }')`,
+            }', '${req.body.description}')`,
             (err, result) => {
               if (err) {
                 throw err;

@@ -9,6 +9,7 @@ export default function Feed({
   deleteHandler,
   photoID
 }) {
+  date = new Date(date).toLocaleDateString();
   return (
     <div style={{ marginBottom: '2rem' }}>
       <Card fluid centered>

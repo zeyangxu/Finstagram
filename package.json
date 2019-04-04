@@ -8,7 +8,7 @@
     "client": "npm start --prefix client",
     "server": "nodemon index.js | bunyan",
     "start": "node index.js",
-    "debug": "DEBUG=* node index.js"
+    "debug": "DEBUG=* node index.js | bunyan"
   },
   "keywords": [],
   "author": "",

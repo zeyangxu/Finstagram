@@ -12,7 +12,7 @@ router.get('/', (req, res, next) => {
     log.info({ query: req.query.id });
     findUser(req.query.id, res, (username, res) => {
       conn.query(
-        `SELECT filePath, photoID FROM Photo WHERE photoOwner='${username}'`,
+        `SELECT filePath, photoID, timestamp, caption FROM Photo WHERE photoOwner='${username}'`,
         (err, result) => {
           if (err) {
             throw err;
@@ -20,12 +20,15 @@ router.get('/', (req, res, next) => {
           const pathList = result
             .map(i => {
               return {
+                username: username,
                 filePath: i.filePath.replace(/public/, ''),
-                photoID: i.photoID
+                photoID: i.photoID,
+                timestamp: i.timestamp,
+                caption: i.caption
               };
             })
             .reverse();
-          log.info({ func: 'gallery get', pathList, result });
+          log.info({ func: 'gallery get' });
           res.status(200).json({ success: true, data: pathList });
         }
       );
