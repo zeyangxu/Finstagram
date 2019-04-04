@@ -16,7 +16,9 @@ export default class DynamicNavbar extends Component {
 
   showDynamicNavbar = () => {
     const scrollPos = document.scrollingElement.scrollTop;
-    this.setState({ scrollPos: scrollPos });
+    if (scrollPos < 300) {
+      this.setState({ scrollPos: scrollPos });
+    }
   };
 
   componentDidMount() {

@@ -3,7 +3,7 @@ const express = require('express'),
   debug = require('debug')('mysql'),
   bunyan = require('bunyan');
 
-const conn = require('../../conn');
+const conn = require('../../helpers/conn');
 const log = bunyan.createLogger({ name: 'db' });
 
 router.get('/test', (req, res) => {

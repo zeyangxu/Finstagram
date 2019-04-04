@@ -104,7 +104,7 @@ class Navbar extends Component {
               </NavLink>
             </Menu.Item>
 
-            <Menu.Menu position="right">
+            <Menu.Menu position="right" style={{ margin: 0 }}>
               <Responsive minWidth={768}>
                 <Menu.Item
                   style={{ color: '#000', marginTop: '1rem' }}

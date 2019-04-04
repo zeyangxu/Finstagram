@@ -1,17 +1,32 @@
 import React, { Component } from 'react';
 import Navbar from './Navbar';
 import FeedList from './FeedList';
-import { Button } from 'semantic-ui-react';
+import { Button, Dimmer, Loader, Container } from 'semantic-ui-react';
 import { withCookies, Cookies } from 'react-cookie';
 import PropTypes from 'prop-types';
 
 class Main extends Component {
   constructor(props) {
     super(props);
+    this.state = {
+      photoList: [],
+      loading: false
+    };
     this.fileInput = React.createRef();
   }
+
+  startLoader = () => {
+    console.log('startLoader()');
+    this.setState({ loading: true });
+  };
+  stopLoader = () => {
+    console.log('stopLoader()');
+    this.setState({ loading: false });
+  };
+  // handle phot submit
   submitHandler = async e => {
     e.preventDefault();
+    this.setState({ loading: true });
     // do something
     console.log(this.fileInput.current.files[0]);
     const data = new FormData();
@@ -30,25 +45,42 @@ class Main extends Component {
       if (res.status === 200) {
         console.log('upload success');
       } else {
-        alert(json.error);
         console.log('upload fail', json.error);
       }
+      this.setState({ loading: false });
+      this.fileInput.current.value = '';
     } catch (err) {
       console.error(err);
     }
   };
 
   render() {
+    const { loading } = this.state;
     return (
       <div>
+        {loading && (
+          <Dimmer active>
+            <Loader />
+          </Dimmer>
+        )}
         <Navbar />
-        <form onSubmit={this.submitHandler}>
-          <input type="file" name="userpost" ref={this.fileInput} />
-          <Button color="violet" type="submit" style={{ marginBottom: '1rem' }}>
-            Upload
-          </Button>
-        </form>
-        <FeedList />
+        <Container>
+          <form onSubmit={this.submitHandler}>
+            <input type="file" name="userpost" ref={this.fileInput} />
+            <Button
+              color="violet"
+              type="submit"
+              style={{ marginBottom: '1rem' }}
+            >
+              Upload
+            </Button>
+          </form>
+          <FeedList
+            loading={loading}
+            startLoader={this.startLoader}
+            stopLoader={this.stopLoader}
+          />
+        </Container>
       </div>
     );
   }

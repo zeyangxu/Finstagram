@@ -14,7 +14,7 @@ const bcrypt_debug = debug('bcrypt'),
 const log = bunyan.createLogger({ name: 'register' });
 
 // mysql connection
-const conn = require('../../conn');
+const conn = require('../../helpers/conn');
 
 // @Register endpoint
 // request type
