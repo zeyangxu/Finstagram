@@ -2,7 +2,16 @@ import React, { Component } from 'react';
 import Navbar from './Navbar';
 import FeedList from './FeedList';
 import Upload from './Upload';
-import { Dimmer, Loader, Container } from 'semantic-ui-react';
+import {
+  Button,
+  Image,
+  Dimmer,
+  Loader,
+  Container,
+  Modal,
+  Placeholder,
+  Header
+} from 'semantic-ui-react';
 import { withCookies, Cookies } from 'react-cookie';
 import PropTypes from 'prop-types';
 
@@ -11,8 +20,11 @@ class Main extends Component {
     super(props);
     this.state = {
       photoList: [],
-      loading: false
+      loading: false,
+      modalOpen: false,
+      imageUploadPreviewURL: null
     };
+    this.fileInput = React.createRef();
   }
 
   startLoader = () => {
@@ -23,9 +35,23 @@ class Main extends Component {
     console.log('stopLoader()');
     this.setState({ loading: false });
   };
+  openModal = () => {
+    this.setState({ modalOpen: true });
+  };
+  closeModal = () => {
+    this.setState({ modalOpen: false, imageUploadPreviewURL: null });
+    this.fileInput = null;
+  };
+  fileInputOnChange = () => {
+    this.setState({
+      imageUploadPreviewURL: URL.createObjectURL(
+        this.fileInput.current.files[0]
+      )
+    });
+  };
 
   render() {
-    const { loading } = this.state;
+    const { loading, modalOpen, imageUploadPreviewURL } = this.state;
     return (
       <div>
         <Navbar />
@@ -33,7 +59,41 @@ class Main extends Component {
           <Dimmer active={loading}>
             <Loader>Loading</Loader>
           </Dimmer>
-          <Upload startLoader={this.startLoader} stopLoader={this.stopLoader} />
+          <Button
+            onClick={this.openModal}
+            color="violet"
+            icon="add"
+            style={{ marginBottom: '2rem' }}
+          />
+          <Modal dimmer="inverted" open={modalOpen} onClose={this.closeModal}>
+            <Modal.Header>Select a Photo</Modal.Header>
+            <Modal.Content image>
+              {imageUploadPreviewURL ? (
+                <Image wrapped size="medium" src={imageUploadPreviewURL} />
+              ) : (
+                <Placeholder
+                  style={{ height: 150, width: 150, marginRight: '2rem' }}
+                >
+                  <Placeholder.Image />
+                </Placeholder>
+              )}
+              <Modal.Description>
+                <Upload
+                  startLoader={this.startLoader}
+                  stopLoader={this.stopLoader}
+                  fileInputRef={this.fileInput}
+                  fileInputOnChange={this.fileInputOnChange}
+                  closeModal={this.closeModal}
+                />
+              </Modal.Description>
+            </Modal.Content>
+            <Modal.Actions>
+              <Button color="black" onClick={this.closeModal}>
+                Nope
+              </Button>
+            </Modal.Actions>
+          </Modal>
+
           <FeedList
             loading={loading}
             startLoader={this.startLoader}

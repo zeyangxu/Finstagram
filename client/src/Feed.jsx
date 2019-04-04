@@ -7,12 +7,13 @@ export default function Feed({
   date,
   description,
   deleteHandler,
-  photoID
+  photoID,
+  isPublic
 }) {
   date = new Date(date).toLocaleDateString();
   return (
     <div style={{ marginBottom: '2rem' }}>
-      <Card fluid centered>
+      <Card>
         <Image src={img_url} />
         <Card.Content>
           <Card.Header>
@@ -32,9 +33,17 @@ export default function Feed({
           <Card.Description>{description}</Card.Description>
         </Card.Content>
         <Card.Content extra>
-          <span>
-            <Icon name="comments outline" />
-          </span>
+          {isPublic ? (
+            <span>
+              <Icon name="eye" />
+              public
+            </span>
+          ) : (
+            <span>
+              <Icon name="eye slash" />
+              private
+            </span>
+          )}
         </Card.Content>
       </Card>
     </div>

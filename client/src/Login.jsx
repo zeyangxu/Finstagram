@@ -115,6 +115,7 @@ class Login extends Component {
                   <input
                     value={password}
                     name="password"
+                    type="password"
                     onChange={this.handleInput}
                   />
                 </Form.Field>

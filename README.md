@@ -22,8 +22,9 @@ This app use session based authentication
 ## Todo
 
 - [x] Store session id in cookie
-- [ ] React-router protected route
+- [x] React-router protected route
 - [x] Not storing session-id of all request
+- [ ] Show upload error alert modal
 
 ### Features
 

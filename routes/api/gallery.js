@@ -12,7 +12,7 @@ router.get('/', (req, res, next) => {
     log.info({ query: req.query.id });
     findUser(req.query.id, res, (username, res) => {
       conn.query(
-        `SELECT filePath, photoID, timestamp, caption FROM Photo WHERE photoOwner='${username}'`,
+        `SELECT filePath, photoID, timestamp, caption, allFollowers FROM Photo WHERE photoOwner='${username}'`,
         (err, result) => {
           if (err) {
             throw err;
@@ -24,7 +24,8 @@ router.get('/', (req, res, next) => {
                 filePath: i.filePath.replace(/public/, ''),
                 photoID: i.photoID,
                 timestamp: i.timestamp,
-                caption: i.caption
+                caption: i.caption,
+                isPublic: i.allFollowers
               };
             })
             .reverse();

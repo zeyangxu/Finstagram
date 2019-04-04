@@ -65,13 +65,21 @@ router.post('/photo', (req, res, next) => {
             file_extension: path.extname(req.file.originalname),
             sessionID: req.body.active_session_id,
             description: req.body.description,
+            isPublic: {
+              value: req.body.isPublic,
+              type: typeof parseInt(req.body.isPublic)
+            },
             username: username,
             file: req.file
           });
           conn.query(
-            `INSERT INTO Photo (photoID, photoOwner, filePath, caption) VALUES (NULL, '${username}', '${
-              req.file.path
-            }', '${req.body.description}')`,
+            `INSERT INTO Photo (photoID, photoOwner, filePath, caption, allFollowers) VALUES (NULL, ?, ?, ?, ?)`,
+            [
+              username,
+              req.file.path,
+              req.body.description,
+              parseInt(req.body.isPublic)
+            ],
             (err, result) => {
               if (err) {
                 throw err;

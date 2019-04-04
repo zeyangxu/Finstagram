@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Grid } from 'semantic-ui-react';
+import { Grid, Card } from 'semantic-ui-react';
 import Feed from './Feed';
 import { withCookies, Cookies } from 'react-cookie';
 import PropTypes from 'prop-types';
@@ -57,21 +57,24 @@ class FeedList extends Component {
     const { photoList } = this.state;
     return (
       <div>
-        <Grid centered>
-          <Grid.Column width={9}>
+        <Grid>
+          <Grid.Row columns={4}>
             {photoList &&
               photoList.map(i => (
-                <Feed
-                  img_url={'http://localhost:5000' + i.filePath}
-                  key={i.photoID}
-                  photoID={i.photoID}
-                  owner_name="zeb"
-                  date={i.timestamp}
-                  description={i.caption}
-                  deleteHandler={this.onDeleteBtnClick}
-                />
+                <Grid.Column key={i.photoID}>
+                  <Feed
+                    img_url={'http://localhost:5000' + i.filePath}
+                    key={i.photoID}
+                    photoID={i.photoID}
+                    owner_name={i.username}
+                    date={i.timestamp}
+                    isPublic={i.isPublic}
+                    description={i.caption}
+                    deleteHandler={this.onDeleteBtnClick}
+                  />
+                </Grid.Column>
               ))}
-          </Grid.Column>
+          </Grid.Row>
         </Grid>
       </div>
     );
