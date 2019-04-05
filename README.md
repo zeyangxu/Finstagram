@@ -4,6 +4,8 @@ this is a project for CS-UY 3083 course
 
 ## Technical Stack
 
+![](https://cdn-images-1.medium.com/max/1200/1*EKW3XazCN98jcVrlEP3H8g.png)
+
 - Node.js & Express as backend framework
 - React.js as frontend framework
 - Semantic-ui-react as css component
