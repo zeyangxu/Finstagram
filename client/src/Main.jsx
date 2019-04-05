@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Navbar from './Navbar';
-import FeedList from './FeedList';
+import PhotoList from './PhotoList';
 import Upload from './Upload';
 import {
   Button,
@@ -9,8 +9,7 @@ import {
   Loader,
   Container,
   Modal,
-  Placeholder,
-  Header
+  Placeholder
 } from 'semantic-ui-react';
 import { withCookies, Cookies } from 'react-cookie';
 import PropTypes from 'prop-types';
@@ -40,21 +39,22 @@ class Main extends Component {
   };
   closeModal = () => {
     this.setState({ modalOpen: false, imageUploadPreviewURL: null });
-    this.fileInput = null;
   };
   fileInputOnChange = () => {
-    this.setState({
-      imageUploadPreviewURL: URL.createObjectURL(
-        this.fileInput.current.files[0]
-      )
-    });
+    if (this.fileInput) {
+      this.setState({
+        imageUploadPreviewURL: URL.createObjectURL(
+          this.fileInput.current.files[0]
+        )
+      });
+    }
   };
 
   render() {
     const { loading, modalOpen, imageUploadPreviewURL } = this.state;
     return (
       <div>
-        <Navbar />
+        <Navbar username={this.props.username} />
         <Container>
           <Dimmer active={loading}>
             <Loader>Loading</Loader>
@@ -69,7 +69,18 @@ class Main extends Component {
             <Modal.Header>Select a Photo</Modal.Header>
             <Modal.Content image>
               {imageUploadPreviewURL ? (
-                <Image wrapped size="medium" src={imageUploadPreviewURL} />
+                <div style={{ height: 300, width: 300, marginRight: '2rem' }}>
+                  <img
+                    alt="upload-img"
+                    src={imageUploadPreviewURL}
+                    style={{
+                      maxHeight: '100%',
+                      maxWidth: '100%',
+                      display: 'block',
+                      margin: 'auto'
+                    }}
+                  />
+                </div>
               ) : (
                 <Placeholder
                   style={{ height: 150, width: 150, marginRight: '2rem' }}
@@ -87,14 +98,10 @@ class Main extends Component {
                 />
               </Modal.Description>
             </Modal.Content>
-            <Modal.Actions>
-              <Button color="black" onClick={this.closeModal}>
-                Nope
-              </Button>
-            </Modal.Actions>
           </Modal>
 
-          <FeedList
+          <PhotoList
+            showPublic={this.props.public}
             loading={loading}
             startLoader={this.startLoader}
             stopLoader={this.stopLoader}

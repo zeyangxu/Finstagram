@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Form, Button, Radio } from 'semantic-ui-react';
+import { Form, Button, Radio, Dropdown } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 import { withCookies, Cookies } from 'react-cookie';
 import { withRouter } from 'react-router-dom';
@@ -10,8 +10,30 @@ class Upload extends Component {
     super(props);
     this.state = {
       descText: '',
-      isPublicPost: '1'
+      isPublicPost: '1',
+      groupList: [],
+      groupSelect: null,
+      showGroupSelect: true
     };
+  }
+  async componentDidMount() {
+    const { cookies } = this.props;
+    const sessionID = cookies.cookies.sessionID;
+    const res1 = fetch(`/api/groups/own/${sessionID}`);
+    const res2 = fetch(`/api/groups/belong/${sessionID}`);
+    try {
+      const res = await Promise.all([res1, res2]);
+      const json1 = res[0].json();
+      const json2 = res[1].json();
+      const json = await Promise.all([json1, json2]);
+      const result = json.reduce((result, i) => {
+        return result.concat(i.data);
+      }, []);
+      console.log('upload fetch group name data', result);
+      this.setState({ groupList: result });
+    } catch (err) {
+      this.props.history.push('/');
+    }
   }
   // handle phot submit
   submitHandler = async e => {
@@ -20,11 +42,13 @@ class Upload extends Component {
     // do something
     const data = new FormData();
     const { cookies } = this.props;
-    const { descText, isPublicPost } = this.state;
+    const { descText, isPublicPost, groupSelect } = this.state;
     const sessionID = cookies.cookies.sessionID;
     data.append('active_session_id', sessionID);
     data.append('description', descText);
     data.append('isPublic', isPublicPost);
+    data.append('groupName', groupSelect.groupName);
+    data.append('groupOwner', groupSelect.groupOwner);
     data.append('userpost', this.props.fileInputRef.current.files[0]);
     // data.append('filename', this.fileName.value);
     try {
@@ -54,10 +78,27 @@ class Upload extends Component {
     this.setState({ descText: e.target.value });
   };
   onVisibilityChange = (e, { value }) => {
-    this.setState({ isPublicPost: value });
+    this.setState({
+      isPublicPost: value,
+      showGroupSelect: value === '1' ? true : false
+    });
+  };
+  groupSelectOnChange = (e, { value }) => {
+    const { groupList } = this.state;
+    console.log('group list result convert');
+    this.setState({ groupSelect: groupList[value] });
   };
   render() {
-    const { descText, isPublicPost } = this.state;
+    const { descText, isPublicPost, groupList, showGroupSelect } = this.state;
+    const options = groupList
+      ? groupList.map((i, index) => {
+          return {
+            key: i.groupName + i.groupOwner,
+            text: `${i.groupName} - ${i.groupOwner}`,
+            value: index
+          };
+        })
+      : [];
     return (
       <div>
         <Form onSubmit={this.submitHandler}>
@@ -75,13 +116,6 @@ class Upload extends Component {
                 onChange={this.props.fileInputOnChange}
               />
             </Form.Field>
-            <Button
-              color="violet"
-              type="submit"
-              style={{ marginBottom: '1rem' }}
-            >
-              Upload
-            </Button>
           </Form.Group>
           <Form.Group>
             <label>Visibility</label>
@@ -100,6 +134,23 @@ class Upload extends Component {
               onChange={this.onVisibilityChange}
             />
           </Form.Group>
+          {showGroupSelect && (
+            <Dropdown
+              options={options}
+              onChange={this.groupSelectOnChange}
+              placeholder="Group"
+              search
+              selection
+            />
+          )}
+          <Button
+            color="violet"
+            floated="right"
+            type="submit"
+            style={{ marginBottom: '1rem' }}
+          >
+            Upload
+          </Button>
         </Form>
       </div>
     );

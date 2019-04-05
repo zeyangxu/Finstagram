@@ -65,6 +65,8 @@ router.post('/photo', (req, res, next) => {
             file_extension: path.extname(req.file.originalname),
             sessionID: req.body.active_session_id,
             description: req.body.description,
+            groupSelect: req.body.groupSelect,
+            ownerList: req.body.groupOwnerList,
             isPublic: {
               value: req.body.isPublic,
               type: typeof parseInt(req.body.isPublic)
@@ -88,8 +90,20 @@ router.post('/photo', (req, res, next) => {
                 func: 'insert photo query',
                 insertId: result.insertId
               });
+              if (req.body.isPublic === '1')
+                conn.query(
+                  `INSERT INTO Share (groupName, groupOwner, photoID) VALUES (?, ?, ?)`,
+                  [req.body.groupName, req.body.groupOwner, result.insertId],
+                  (err, result) => {
+                    if (err) {
+                      throw err;
+                    }
+                    log.info({ func: 'insert photo share', result });
+                  }
+                );
             }
           );
+
           res.status(200).json({ success: true });
         });
       }

@@ -9,50 +9,29 @@ import {
   Responsive,
   Message
 } from 'semantic-ui-react';
-import { Link } from 'react-router-dom';
+import { Link, withRouter } from 'react-router-dom';
+import { withCookies, Cookies } from 'react-cookie';
+import PropTypes from 'prop-types';
+import { compose } from 'recompose';
 
-export default class Signup extends Component {
-  // * Production version
-  // constructor(props) {
-  //   super(props);
-  //   this.state = {
-  //     username: '',
-  //     errUsername: false,
-  //     password: '',
-  //     errPassword: false,
-  //     fname: '',
-  //     errFname: false,
-  //     lname: '',
-  //     errLname: false,
-  //     re_password: '',
-  //     errRepassword: false,
-  //     termsIsChecked: false,
-  //     passwordIsValid: true,
-  //     showWarningMsg: false,
-  //     inputIsValid: true,
-  //     errMsgList: []
-  //   };
-  //   this.handleInputChange = this.handleInputChange.bind(this);
-  //   this.postAuth = this.postAuth.bind(this);
-  // }
-
-  // * Dev version
+class Signup extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      username: 'zebxu',
+      username: '',
       errUsername: false,
-      password: '123',
+      password: '',
       errPassword: false,
-      fname: 'zeyang',
+      fname: '',
       errFname: false,
-      lname: 'xu',
+      lname: '',
       errLname: false,
-      re_password: '123',
+      re_password: '',
       errRepassword: false,
-      termsIsChecked: true,
+      termsIsChecked: false,
       passwordIsValid: true,
       showWarningMsg: false,
+      inputIsValid: true,
       errMsgList: []
     };
     this.handleInputChange = this.handleInputChange.bind(this);
@@ -114,7 +93,7 @@ export default class Signup extends Component {
 
   postAuth = async () => {
     const { username, password, fname, lname } = this.state;
-
+    const { cookies, AppAuth } = this.props;
     // validate input
     if (this.validate()) {
       try {
@@ -126,6 +105,8 @@ export default class Signup extends Component {
         });
         const json = await res.json();
         if (res.status === 201) {
+          cookies.set('sessionID', json.sessionID, { maxAge: 5000 });
+          await AppAuth();
           this.props.history.push('/');
         } else {
           let err_list = [];
@@ -303,3 +284,10 @@ export default class Signup extends Component {
     );
   }
 }
+Signup.propTypes = {
+  cookies: PropTypes.instanceOf(Cookies).isRequired
+};
+export default compose(
+  withCookies,
+  withRouter
+)(Signup);

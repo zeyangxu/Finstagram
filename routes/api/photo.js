@@ -1,18 +1,18 @@
 const express = require('express'),
   router = express.Router(),
-  debug = require('debug')('gallery'),
+  debug = require('debug')('photo'),
   bunyan = require('bunyan');
 
 const conn = require('../../helpers/conn'),
   findUser = require('../../helpers/find-user');
-const log = bunyan.createLogger({ name: 'gallery' });
+const log = bunyan.createLogger({ name: 'photo' });
 
 router.get('/:id', (req, res, next) => {
   try {
     log.info({ query: req.params.id });
     findUser(req.params.id, res, (username, res) => {
       conn.query(
-        `SELECT filePath, photoID, timestamp, caption, allFollowers FROM Photo WHERE photoOwner='${username}'`,
+        `SELECT photoOwner, filePath, photoID, timestamp, caption, allFollowers FROM Photo WHERE allFollowers=1`,
         (err, result) => {
           if (err) {
             throw err;
@@ -20,7 +20,7 @@ router.get('/:id', (req, res, next) => {
           const pathList = result
             .map(i => {
               return {
-                username: username,
+                username: i.photoOwner,
                 filePath: i.filePath.replace(/public/, ''),
                 photoID: i.photoID,
                 timestamp: i.timestamp,
@@ -29,7 +29,7 @@ router.get('/:id', (req, res, next) => {
               };
             })
             .reverse();
-          log.info({ func: 'gallery get' });
+          log.info({ func: 'photo get' });
           res.status(200).json({ success: true, data: pathList });
         }
       );
@@ -37,22 +37,6 @@ router.get('/:id', (req, res, next) => {
   } catch (err) {
     next(err);
   }
-});
-
-router.delete('/:id', (req, res, next) => {
-  const photoID = req.params.id;
-  conn.query(
-    `DELETE FROM Photo WHERE photoID = '${photoID}'`,
-    (err, result) => {
-      if (err) {
-        mysql_debug(err);
-        res.status(500).json({ success: false, error: 'server error' });
-        return next(err);
-      } else {
-        res.status(200).json({ success: true });
-      }
-    }
-  );
 });
 
 module.exports = router;

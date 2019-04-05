@@ -34,7 +34,7 @@ app.use(
       return uuid();
     },
     secret: 'you_are_gay',
-    cookie: { maxAge: 1000 },
+    cookie: { maxAge: 5000 },
     store: session_store,
     resave: false,
     saveUninitialized: false
@@ -49,13 +49,17 @@ const auth = require('./routes/api/auth'),
   register = require('./routes/api/register'),
   upload = require('./routes/api/upload'),
   db = require('./routes/api/db'),
-  gallery = require('./routes/api/gallery');
+  gallery = require('./routes/api/gallery'),
+  photo = require('./routes/api/photo'),
+  groups = require('./routes/api/groups');
 
 app.use('/api/auth', auth);
 app.use('/api/register', register);
 app.use('/api/db', db);
 app.use('/api/upload', upload);
 app.use('/api/gallery', gallery);
+app.use('/api/photo', photo);
+app.use('/api/groups', groups);
 
 app.use(express.static('public'));
 // start the server

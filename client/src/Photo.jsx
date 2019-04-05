@@ -1,30 +1,45 @@
 import React from 'react';
 import { Button, Card, Image, Icon } from 'semantic-ui-react';
 
-export default function Feed({
+export default function Photo({
   img_url,
   owner_name,
   date,
   description,
   deleteHandler,
   photoID,
-  isPublic
+  isPublic,
+  centered,
+  fluid,
+  showDelete
 }) {
   date = new Date(date).toLocaleDateString();
   return (
     <div style={{ marginBottom: '2rem' }}>
-      <Card>
-        <Image src={img_url} />
+      <Card centered={centered} fluid={fluid}>
+        <div style={{ height: '100%', width: '100%' }}>
+          <Image
+            src={img_url}
+            style={{
+              maxHeight: '100%',
+              maxWidth: '100%',
+              display: 'block',
+              margin: 'auto'
+            }}
+          />
+        </div>
         <Card.Content>
           <Card.Header>
             {owner_name}
-            <Button
-              onClick={e => deleteHandler(photoID)}
-              icon="delete"
-              floated="right"
-              color="red"
-              compact
-            />
+            {showDelete && (
+              <Button
+                onClick={e => deleteHandler(photoID)}
+                icon="delete"
+                floated="right"
+                color="red"
+                compact
+              />
+            )}
           </Card.Header>
 
           <Card.Meta>

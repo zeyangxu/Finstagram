@@ -16,7 +16,7 @@ class App extends Component {
     };
   }
 
-  async componentWillMount() {
+  componentWillMount() {
     console.log('app componentWillMount');
     this.authWithSession();
   }
@@ -26,15 +26,18 @@ class App extends Component {
     const sessionID = cookies.cookies.sessionID;
     if (sessionID) {
       console.log('app auth', sessionID);
-      const auth = await this.authFetchPost(sessionID);
-      if (auth) {
-        console.log('auth success');
-        this.setState({ isAuth: true });
-        this.props.history.push('/');
-      } else {
-        this.setState({ isAuth: false });
-        this.props.history.push('/login');
-        console.log('session invalid');
+      try {
+        const auth = await this.authFetchPost(sessionID);
+        if (auth) {
+          console.log('auth success');
+          this.setState({ isAuth: true });
+        } else {
+          this.setState({ isAuth: false });
+          this.props.history.push('/login');
+          console.log('session invalid');
+        }
+      } catch (err) {
+        console.error(err);
       }
     } else {
       this.setState({ isAuth: false });
@@ -44,7 +47,10 @@ class App extends Component {
   authFetchPost = async sessionID => {
     // post to auth.js with cookies
     const res = await fetch(`/api/auth/${sessionID}`);
+    const json = await res.json();
     if (res.status === 201) {
+      console.log('username', json.username);
+      this.setState({ username: json.username });
       return true;
       // this.props.history.push('/');
     } else {
@@ -52,26 +58,45 @@ class App extends Component {
     }
   };
   render() {
-    const { isAuth } = this.state;
+    const { isAuth, username } = this.state;
     return (
-      <React.Fragment>
+      <>
         <Switch>
           <Route
-            exact
             path="/login"
             render={props => (
               <Login {...props} AppAuth={this.authWithSession} />
             )}
           />
-          <Route path="/signup" render={props => <Signup {...props} />} />
+          <Route
+            path="/signup"
+            render={props => (
+              <Signup {...props} AppAuth={this.authWithSession} />
+            )}
+          />
           <Route
             path="/"
+            exact
             render={props =>
-              isAuth ? <Main {...props} /> : <Redirect to="/login" />
+              isAuth ? (
+                <Main {...props} username={username} public={true} />
+              ) : (
+                <Redirect to="/login" />
+              )
+            }
+          />
+          <Route
+            path="/gallery"
+            render={props =>
+              isAuth ? (
+                <Main {...props} username={username} public={false} />
+              ) : (
+                <Redirect to="/login" />
+              )
             }
           />
         </Switch>
-      </React.Fragment>
+      </>
     );
   }
 }

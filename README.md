@@ -19,6 +19,89 @@ This app use session based authentication
 
 ![](https://cdn-images-1.medium.com/max/1600/1*Hg1gUTXN5E3Nrku0jWCRow.png)
 
+## Backend api endpoint
+
+### Auth
+
+#### GET `/api/auth/<sessionID>`
+
+response: {success, username}
+
+Handle session check, check if the session id exist
+
+#### DELETE `/api/auth/<sessionID>`
+
+response: {success}
+
+Handle sign out, delete the session id record in database
+
+#### POST `/api/auth/`
+
+body: {username, password}
+
+response: {success, sessionID}
+
+Handle log in
+
+### Register
+
+#### POST `/api/register/`
+
+body: {password, username, fname, lname}
+
+response: {success, sessionID, \*error}
+
+### Upload
+
+#### POST `/api/upload/photo`
+
+body: file, {active_session_id, description, isPublic}
+
+response: {success}
+
+Handle photo upload, image format and size limit are restricted
+
+### Photo
+
+#### GET `/api/photo/<sessionID>`
+
+response: {success, data:\[{username,
+filePath,
+photoID,
+timestamp,
+caption,
+isPublic}\]}
+
+Handle public photo fetching
+
+### Gallery
+
+#### GET `/api/gallery/<sessionID>`
+
+response: {success, data, \*error}
+
+Handle personal photo fetching
+
+#### DELETE `/api/gallery/<sessionID>`
+
+response: {success, \*error}
+
+Handle personal photo fetching
+
+### Groups
+
+#### GET `/api/groups/own/<sessionID>`
+
+response: {success, data: \[{groupName}\]}
+
+Response a list of group names the user owns
+
+#### GET `/api/groups/belong/<sessionID>`
+
+response: {success, data \[{groupName, groupOwner}\]}
+
+Response a list of group names the user belong to
+
 ## Todo
 
 - [x] Store session id in cookie

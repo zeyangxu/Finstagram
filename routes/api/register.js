@@ -52,9 +52,8 @@ router.post('/', (req, res, next) => {
         }
         return next(err);
       } else {
-        res
-          .status(201)
-          .json({ success: true, req: req.body, sessionID: req.session.id });
+        req.session.username = username;
+        res.status(201).json({ success: true, sessionID: req.session.id });
       }
     });
   });

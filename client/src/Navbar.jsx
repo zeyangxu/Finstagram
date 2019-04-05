@@ -103,7 +103,7 @@ class Navbar extends Component {
                 </Header>
               </NavLink>
             </Menu.Item>
-
+            <Menu.Item name={`Welcome, ${this.props.username}`} />
             <Menu.Menu position="right" style={{ margin: 0 }}>
               <Responsive minWidth={768}>
                 <Menu.Item
@@ -119,15 +119,15 @@ class Navbar extends Component {
               <Responsive minWidth={768}>
                 <Menu.Item
                   as={NavLink}
-                  to="/favorite"
+                  to="/gallery"
                   style={{ color: '#000', marginTop: '1rem' }}
-                  name="fav"
-                  active={activeItem === 'fav'}
+                  name="gallery"
+                  active={activeItem === 'gallery'}
                   onClick={this.handleItemClick}
                   position="right"
                 >
                   <Icon name="user" color="violet" />
-                  profile
+                  Gallery
                 </Menu.Item>
               </Responsive>
               <Responsive minWidth={768} as={Menu.Item}>

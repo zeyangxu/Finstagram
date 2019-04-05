@@ -4,7 +4,7 @@ const express = require('express'),
   debug = require('debug'),
   conn = require('../../helpers/conn'),
   bunyan = require('bunyan');
-
+const findUser = require('../../helpers/find-user');
 // logger
 const log = bunyan.createLogger({ name: 'auth' });
 
@@ -41,27 +41,9 @@ router.delete('/:id', (req, res, next) => {
 // get
 router.get('/:id', (req, res) => {
   const id = req.params.id;
-  conn.query(
-    `SELECT data FROM sessions WHERE session_id='${id}'`,
-    (err, result) => {
-      if (err) {
-        mysql_debug(err);
-        next(err);
-      }
-      log.info({
-        function: 'sql check session query',
-        sessionID: id,
-        result: result
-      });
-      if (result[0]) {
-        const data = JSON.parse(result[0].data);
-        console.log(data.cookie.expires);
-        res.status(201).json({ success: true });
-      } else {
-        res.status(401).json({ success: false, msg: 'session not found' });
-      }
-    }
-  );
+  findUser(id, res, (username, res) => {
+    res.status(201).json({ success: true, username: username });
+  });
 });
 
 // @Login with username and password endpoint
