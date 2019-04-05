@@ -108,14 +108,15 @@ Response a list of group names the user belong to
 - [x] React-router protected route
 - [x] Not storing session-id of all request
 - [ ] Show upload error alert modal
+- [ ] Tag other user in a post
 
 ### Features
 
 - [x] Sign up system
 - [x] Log in system
 - [x] Session
-- [ ] Upload photo
-- [ ] View photo and data
+- [x] Upload photo
+- [x] View photo and data
 - [ ] Create close friend group
 
 ## Notes
