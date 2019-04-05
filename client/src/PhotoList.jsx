@@ -65,7 +65,6 @@ class PhotoList extends Component {
     if (this.props.showPublic) {
       return (
         <div>
-          <h1>Public</h1>
           <Grid centered>
             <Grid.Column width={10}>
               {photoList &&

@@ -47,8 +47,10 @@ class Upload extends Component {
     data.append('active_session_id', sessionID);
     data.append('description', descText);
     data.append('isPublic', isPublicPost);
-    data.append('groupName', groupSelect.groupName);
-    data.append('groupOwner', groupSelect.groupOwner);
+    if (groupSelect) {
+      data.append('groupName', groupSelect.groupName);
+      data.append('groupOwner', groupSelect.groupOwner);
+    }
     data.append('userpost', this.props.fileInputRef.current.files[0]);
     // data.append('filename', this.fileName.value);
     try {
@@ -90,15 +92,13 @@ class Upload extends Component {
   };
   render() {
     const { descText, isPublicPost, groupList, showGroupSelect } = this.state;
-    const options = groupList
-      ? groupList.map((i, index) => {
-          return {
-            key: i.groupName + i.groupOwner,
-            text: `${i.groupName} - ${i.groupOwner}`,
-            value: index
-          };
-        })
-      : [];
+    const options = groupList.map((i, index) => {
+      return {
+        key: i.groupName + i.groupOwner,
+        text: `${i.groupName} - ${i.groupOwner}`,
+        value: index
+      };
+    });
     return (
       <div>
         <Form onSubmit={this.submitHandler}>

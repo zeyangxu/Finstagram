@@ -59,12 +59,14 @@ class Main extends Component {
           <Dimmer active={loading}>
             <Loader>Loading</Loader>
           </Dimmer>
-          <Button
-            onClick={this.openModal}
-            color="violet"
-            icon="add"
-            style={{ marginBottom: '2rem' }}
-          />
+          {!this.props.public && (
+            <Button
+              onClick={this.openModal}
+              color="violet"
+              icon="add"
+              style={{ marginBottom: '2rem' }}
+            />
+          )}
           <Modal dimmer="inverted" open={modalOpen} onClose={this.closeModal}>
             <Modal.Header>Select a Photo</Modal.Header>
             <Modal.Content image>

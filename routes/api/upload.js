@@ -65,7 +65,6 @@ router.post('/photo', (req, res, next) => {
             file_extension: path.extname(req.file.originalname),
             sessionID: req.body.active_session_id,
             description: req.body.description,
-            groupSelect: req.body.groupSelect,
             ownerList: req.body.groupOwnerList,
             isPublic: {
               value: req.body.isPublic,
