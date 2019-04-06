@@ -78,6 +78,8 @@ Handle public photo fetching
 
 ### Gallery
 
+> Prsonal photo manager
+
 #### GET `/api/gallery/<sessionID>`
 
 response: {success, data, \*error}
@@ -88,7 +90,7 @@ Handle personal photo fetching
 
 response: {success, \*error}
 
-Handle personal photo fetching
+Handle personal photo deleting
 
 ### Groups
 
@@ -111,6 +113,7 @@ Response a list of group names the user belong to
 - [x] Not storing session-id of all request
 - [ ] Show upload error alert modal
 - [ ] Tag other user in a post
+- [ ] Post phot with a url
 
 ### Features
 

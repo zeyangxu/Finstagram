@@ -3,6 +3,8 @@ import { Grid } from 'semantic-ui-react';
 import Photo from './Photo';
 import { withCookies, Cookies } from 'react-cookie';
 import PropTypes from 'prop-types';
+import { withRouter } from 'react-router-dom';
+import { compose } from 'recompose';
 
 class PhotoList extends Component {
   state = {
@@ -11,11 +13,15 @@ class PhotoList extends Component {
   async componentDidMount() {
     this.fetchPhoto();
   }
+  getSession = () => {
+    const { cookies } = this.props;
+    return cookies.cookies.sessionID;
+  };
 
   // fetch gallery api endpoint
   fetchPhoto = async () => {
-    const { cookies, showPublic } = this.props;
-    const sessionID = cookies.cookies.sessionID;
+    const { showPublic } = this.props;
+    const sessionID = this.getSession();
     const endpoint = showPublic ? '/api/photo' : '/api/gallery';
     console.log('fetching from: ', `${endpoint}/${sessionID}`);
     try {
@@ -45,8 +51,9 @@ class PhotoList extends Component {
   }
   // handle delete button click event
   onDeleteBtnClick = async id => {
+    const sessionID = this.getSession();
     this.props.startLoader();
-    const res = await fetch(`/api/gallery/${id}`, {
+    const res = await fetch(`/api/gallery?photo=${id}&session=${sessionID}`, {
       method: 'DELETE',
       headers: { ContentType: 'application/json' }
     });
@@ -120,4 +127,7 @@ class PhotoList extends Component {
 PhotoList.protoTypes = {
   cookies: PropTypes.instanceOf(Cookies)
 };
-export default withCookies(PhotoList);
+export default compose(
+  withCookies,
+  withRouter
+)(PhotoList);

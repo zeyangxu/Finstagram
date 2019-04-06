@@ -1,7 +1,8 @@
 const express = require('express'),
   router = express.Router(),
   debug = require('debug')('gallery'),
-  bunyan = require('bunyan');
+  bunyan = require('bunyan'),
+  fs = require('fs');
 
 const conn = require('../../helpers/conn'),
   findUser = require('../../helpers/find-user');
@@ -39,20 +40,81 @@ router.get('/:id', (req, res, next) => {
   }
 });
 
-router.delete('/:id', (req, res, next) => {
-  const photoID = req.params.id;
-  conn.query(
-    `DELETE FROM Photo WHERE photoID = '${photoID}'`,
-    (err, result) => {
-      if (err) {
-        mysql_debug(err);
-        res.status(500).json({ success: false, error: 'server error' });
-        return next(err);
-      } else {
-        res.status(200).json({ success: true });
+router.delete('/', (req, res, next) => {
+  const photoID = req.query.photo;
+  const sessionID = req.query.session;
+  log.info({ photoID, sessionID });
+  findUser(sessionID, res, (username, res) => {
+    conn.query(
+      `SELECT filePath FROM Photo WHERE photoID=?`,
+      [photoID],
+      (err, result) => {
+        if (err) {
+          debug(err);
+          res.status(500).json({ success: false, error: 'server error' });
+          return next(err);
+        } else {
+          const path = result[0].filePath;
+          // log.info(result[0].filePath);
+
+          conn.query(
+            `DELETE FROM Share WHERE photoID ='${photoID}'`,
+            (err, result) => {
+              if (err) {
+                debug(err);
+                res.status(500).json({ success: false, error: 'server error' });
+                return next(err);
+              } else {
+                conn.query(
+                  `DELETE FROM Photo WHERE photoID=? AND photoOwner=?`,
+                  [photoID, username],
+                  (err, result) => {
+                    if (err) {
+                      debug(err);
+                      res
+                        .status(500)
+                        .json({ success: false, error: 'server error' });
+                      return next(err);
+                    }
+                    if (result.affectedRows === 1) {
+                      fs.unlink(`./${path}`, err => {
+                        if (err) {
+                          debug(err);
+                          res
+                            .status(500)
+                            .json({ success: false, error: 'server error' });
+                          return next(err);
+                        } else {
+                          res.status(200).json({ success: true });
+                        }
+                      });
+                    } else {
+                      res.status(400).json({
+                        success: false,
+                        error: 'not found photo or user'
+                      });
+                    }
+                  }
+                );
+              }
+            }
+          );
+        }
       }
-    }
-  );
+    );
+  });
+  // conn.query(
+  //   `DELETE FROM Photo WHERE photoID = '${photoID}'`,
+  //   (err, result) => {
+  //     if (err) {
+  //       mysql_debug(err);
+  //       res.status(500).json({ success: false, error: 'server error' });
+  //       return next(err);
+  //     } else {
+  //       res.status(200).json({ success: true });
+  //     }
+  //   }
+  // );
 });
 
 module.exports = router;
