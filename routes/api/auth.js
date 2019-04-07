@@ -1,89 +1,91 @@
 const express = require('express'),
   bcrypt = require('bcrypt'),
   router = express.Router(),
-  debug = require('debug'),
-  conn = require('../../helpers/conn'),
-  bunyan = require('bunyan');
-const findUser = require('../../helpers/find-user');
+  debug = require('debug')('auth'),
+  bunyan = require('bunyan'),
+  util = require('util');
+
+const conn = require('../../helpers/conn'),
+  findUser = require('../../helpers/find-user'),
+  errHandler = require('../../helpers/error-handle');
+
 // logger
 const log = bunyan.createLogger({ name: 'auth' });
 
-// debugger
-const bcrypt_debug = debug('bcrypt'),
-  mysql_debug = debug('mysql');
+const compare = util.promisify(bcrypt.compare);
 
 // @Log-out endpoint
 // delete
-router.delete('/:id', (req, res, next) => {
+router.delete('/:id', async (req, res, next) => {
   const id = req.params.id;
-  conn.query(`DELETE FROM sessions WHERE session_id='${id}'`, (err, result) => {
-    if (err) {
-      mysql_debug(err);
-      res
-        .status(500)
-        .contentType('text/plain')
-        .end();
-      return next(err);
-    }
+  try {
+    const result = await conn.query(
+      `DELETE FROM sessions WHERE session_id='${id}'`
+    );
     log.info({ function: 'sql remove session', sessionID: id, result: result });
-    // const r = JSON.parse(result);
-    // log.info({ sql_delete_result: r });
     if (result.affectedRows === 1) {
       res.status(201).json({ success: true });
       log.info('delete success');
     } else {
       res.status(400).json({ success: false });
     }
-  });
+  } catch (err) {
+    errHandler(err, res, debug, log, next);
+  }
 });
 
 // @Login check session endpoint
 // get
-router.get('/:id', (req, res) => {
+router.get('/:id', async (req, res, next) => {
   const id = req.params.id;
-  findUser(id, res, (username, res) => {
+  try {
+    const username = await findUser(id, res, next);
     res.status(201).json({ success: true, username: username });
-  });
+  } catch (err) {
+    errHandler(err, res, debug, log, next);
+  }
 });
 
 // @Login with username and password endpoint
 // post
 // :username String
 // :password String
-router.post('/', (req, res) => {
+router.post('/', async (req, res, next) => {
   const { username, password } = req.body;
   log.info({
     username: username,
     password: password,
     sessionID: req.sessionID
   });
-  conn.query(
-    `SELECT password FROM Person WHERE username='${username}'`,
-    (err, result) => {
-      if (err) {
-        mysql_debug(err);
-        next(err);
-      }
-      log.info({ function: 'sql connection query', result: result });
-      if (result[0]) {
-        // authenticate password
-        bcrypt.compare(password, result[0].password, (err, pass) => {
-          if (err) {
-            bcrypt_debug(err);
-            next(err);
-          }
-          if (pass) {
-            req.session.username = username;
-            res.status(201).json({ success: true, session: req.session.id });
-          } else {
-            res.status(401).json({ success: false, error: 'WRONG_PASS' });
-          }
-        });
+  try {
+    const result = await conn.query(
+      `SELECT password FROM Person WHERE username='${username}'`
+    );
+    log.info({ function: 'sql connection query', result: result });
+    if (result[0]) {
+      // authenticate password
+      const pass = await compare(password, result[0].password);
+      if (pass) {
+        req.session.username = username;
+        res
+          .status(201)
+          .json({ success: true, session: req.session.id })
+          .end();
       } else {
-        res.status(401).json({ success: false, error: 'NO_USER' });
+        res
+          .status(401)
+          .json({ success: false, error: 'WRONG_PASS' })
+          .end();
       }
+    } else {
+      res
+        .status(401)
+        .json({ success: false, error: 'NO_USER' })
+        .end();
     }
-  );
+  } catch (err) {
+    errHandler(err, res, debug, log, next);
+  }
 });
 
 module.exports = router;

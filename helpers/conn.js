@@ -1,6 +1,7 @@
 const mysql = require('mysql'),
   debug = require('debug')('mysql'),
-  log = require('bunyan').createLogger({ name: 'conn' });
+  log = require('bunyan').createLogger({ name: 'conn' }),
+  util = require('util');
 
 const conn = mysql.createConnection({
   host: 'localhost',
@@ -16,5 +17,5 @@ conn.connect(err => {
   }
   log.info('database connected!');
 });
-
+conn.query = util.promisify(conn.query);
 module.exports = conn;

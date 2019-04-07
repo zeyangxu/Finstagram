@@ -48,14 +48,12 @@ const log = bunyan.createLogger({ name: 'express' });
 const auth = require('./routes/api/auth'),
   register = require('./routes/api/register'),
   upload = require('./routes/api/upload'),
-  db = require('./routes/api/db'),
   gallery = require('./routes/api/gallery'),
   photo = require('./routes/api/photo'),
   groups = require('./routes/api/groups');
 
 app.use('/api/auth', auth);
 app.use('/api/register', register);
-app.use('/api/db', db);
 app.use('/api/upload', upload);
 app.use('/api/gallery', gallery);
 app.use('/api/photo', photo);

@@ -30,8 +30,9 @@ class PhotoList extends Component {
       if (res.status === 200) {
         this.setState({ photoList: json.data });
       } else {
-        if (res.status === 400 && json.error === 'session id not found') {
-          this.props.history.push('/');
+        console.log('status', res.status);
+        if (res.status === 400) {
+          this.props.history.push('/login');
         }
         console.log('fetch photo fail', json.error);
       }

@@ -1,20 +1,19 @@
-const debug = require('debug'),
+const debug = require('debug')('register'),
   express = require('express'),
   bcrypt = require('bcrypt'),
   router = express.Router(),
-  bunyan = require('bunyan');
+  bunyan = require('bunyan'),
+  util = require('util');
 
 // bcrypt round number
 const saltRounds = 10;
 
-// debug
-const bcrypt_debug = debug('bcrypt'),
-  mysql_debug = debug('mysql');
-
 const log = bunyan.createLogger({ name: 'register' });
+const hash = util.promisify(bcrypt.hash);
 
 // mysql connection
-const conn = require('../../helpers/conn');
+const conn = require('../../helpers/conn'),
+  errHandle = require('../../helpers/error-handle');
 
 // @Register endpoint
 // request type
@@ -22,43 +21,26 @@ const conn = require('../../helpers/conn');
 // :password String
 // :fname String
 // :lname String
-router.post('/', (req, res, next) => {
+router.post('/', async (req, res, next) => {
   const { password, username, fname, lname } = req.body;
   log.info({ cookie: req.session.cookie, id: req.session.id });
-  // encrypt received password
-  bcrypt.hash(password, saltRounds, (err, hash) => {
-    if (err) {
-      bcrypt_debug(err);
-      res
-        .status(500)
-        .contentType('text/plain')
-        .end('Server Error');
-      return next(err);
-    }
+  try {
+    // encrypt received password
 
-    conn.query(
+    const hashed = await hash(password, saltRounds);
+    const result = await conn.query(
       `INSERT INTO Person (username, password, fname, lname) VALUES (?, ?, ?, ?)`,
-      [username, hash, fname, lname],
-      err => {
-        if (err) {
-          mysql_debug(err);
-          if (err.code === 'ER_DUP_ENTRY') {
-            log.info('Bad Request: duplicate username');
-            res.status(403).json({ success: false, error: err.code });
-          } else {
-            log.info('Bad Request: unknown database error');
-            res
-              .status(403)
-              .json({ success: false, error: 'unknown database error' });
-          }
-          return next(err);
-        } else {
-          req.session.username = username;
-          res.status(201).json({ success: true, sessionID: req.session.id });
-        }
-      }
+      [username, hashed, fname, lname]
     );
-  });
+    if (result.affectedRows === 1) {
+      req.session.username = username;
+      res.status(201).json({ success: true, sessionID: req.session.id });
+    } else {
+      res.status(400).json({ success: false, error: 'invalid input' });
+    }
+  } catch (err) {
+    errHandle(err, res, debug, log, next);
+  }
 });
 
 module.exports = router;

@@ -57,6 +57,10 @@ class App extends Component {
       return false;
     }
   };
+
+  deactivateSession = () => {
+    this.setState({ isAuth: false });
+  };
   render() {
     const { isAuth, username } = this.state;
     return (
