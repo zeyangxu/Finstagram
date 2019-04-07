@@ -43,21 +43,40 @@ router.delete('/', async (req, res, next) => {
     const sessionID = req.query.session;
     log.info({ photoID, sessionID });
     const username = await findUser(sessionID, res);
-    const filePath = await conn.query(
-      `SELECT filePath FROM Photo WHERE photoID=?`,
+    let filePath, isPublic;
+    // get photo file path
+    const pathResult = await conn.query(
+      `SELECT filePath, allFollowers FROM Photo WHERE photoID=?`,
       [photoID]
-    )[0].filePath;
-    const result1 = await conn.query(
-      `DELETE FROM Share WHERE photoID ='${photoID}'`
     );
-    if (result1.affectedRows === 1) {
-      const result2 = await conn.query(
-        `DELETE FROM Photo WHERE photoID=? AND photoOwner=?`,
-        [photoID, username]
+    if (pathResult[0]) {
+      filePath = pathResult[0].filePath;
+      isPublic = pathResult[0].allFollowers == 1 ? true : false;
+    } else {
+      throw new Error('photoID not found');
+    }
+    // if the photo is public, first delete the row in Share table
+    if (isPublic) {
+      log.info('isPublic');
+      const result1 = await conn.query(
+        `DELETE FROM Share WHERE photoID ='${photoID}'`
       );
-      if (result2.affectedRows === 1) {
-        await unlink(`./${filePath}`);
+      if (result1.affectedRows === 1) {
+        log.info('delete photo in share table success');
+      } else {
+        throw new Error('delete multiple rows');
       }
+    }
+    // delete
+    const result = await conn.query(
+      `DELETE FROM Photo WHERE photoID=? AND photoOwner=?`,
+      [photoID, username]
+    );
+    if (result.affectedRows === 1) {
+      await unlink(`./${filePath}`);
+      res.status(200).json({ success: true });
+    } else {
+      throw new Error('delete multiple rows');
     }
   } catch (err) {
     errHandler(err, res, debug, log, next);
