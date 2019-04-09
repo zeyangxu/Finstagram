@@ -56,17 +56,17 @@ router.delete('/', async (req, res, next) => {
       throw new Error('photoID not found');
     }
     // if the photo is public, first delete the row in Share table
-    if (isPublic) {
-      log.info('isPublic');
-      const result1 = await conn.query(
-        `DELETE FROM Share WHERE photoID ='${photoID}'`
-      );
-      if (result1.affectedRows === 1) {
-        log.info('delete photo in share table success');
-      } else {
-        throw new Error('delete multiple rows');
-      }
-    }
+    // if (isPublic) {
+    //   log.info('isPublic');
+    //   const result1 = await conn.query(
+    //     `DELETE FROM Share WHERE photoID ='${photoID}'`
+    //   );
+    //   if (result1.affectedRows === 1) {
+    //     log.info('delete photo in share table success');
+    //   } else {
+    //     throw new Error('delete multiple rows');
+    //   }
+    // }
     // delete
     const result = await conn.query(
       `DELETE FROM Photo WHERE photoID=? AND photoOwner=?`,
