@@ -50,7 +50,9 @@ const auth = require('./routes/api/auth'),
   upload = require('./routes/api/upload'),
   gallery = require('./routes/api/gallery'),
   photo = require('./routes/api/photo'),
-  groups = require('./routes/api/groups');
+  groups = require('./routes/api/groups'),
+  follow = require('./routes/api/follow'),
+  search = require('./routes/api/search');
 
 app.use('/api/auth', auth);
 app.use('/api/register', register);
@@ -58,6 +60,8 @@ app.use('/api/upload', upload);
 app.use('/api/gallery', gallery);
 app.use('/api/photo', photo);
 app.use('/api/groups', groups);
+app.use('/api/follow', follow);
+app.use('/api/search', search);
 
 app.use(express.static('public'));
 // start the server

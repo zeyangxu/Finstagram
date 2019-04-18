@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
-import { Grid } from 'semantic-ui-react';
-import Photo from './Photo';
 import { withCookies, Cookies } from 'react-cookie';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import { compose } from 'recompose';
+import FeedList from './FeedList';
+import CollectionList from './CollectionList';
 
 class PhotoList extends Component {
   state = {
@@ -72,55 +72,17 @@ class PhotoList extends Component {
     console.log('PhotoList render');
     if (this.props.showPublic) {
       return (
-        <div>
-          <Grid centered>
-            <Grid.Column width={10}>
-              {photoList &&
-                photoList.map(i => (
-                  <Photo
-                    img_url={'http://localhost:5000' + i.filePath}
-                    key={i.photoID}
-                    photoID={i.photoID}
-                    owner_name={i.username}
-                    date={i.timestamp}
-                    isPublic={i.isPublic}
-                    description={i.caption}
-                    deleteHandler={this.onDeleteBtnClick}
-                    showDelete={false}
-                    centered={true}
-                    fluid={true}
-                  />
-                ))}
-            </Grid.Column>
-          </Grid>
-        </div>
+        <FeedList
+          photoList={photoList}
+          onDeleteBtnClick={this.onDeleteBtnClick}
+        />
       );
     } else {
       return (
-        <div>
-          <Grid>
-            <Grid.Row columns={4}>
-              {photoList &&
-                photoList.map(i => (
-                  <Grid.Column key={i.photoID}>
-                    <Photo
-                      img_url={'http://localhost:5000' + i.filePath}
-                      key={i.photoID}
-                      photoID={i.photoID}
-                      owner_name={i.username}
-                      date={i.timestamp}
-                      isPublic={i.isPublic}
-                      description={i.caption}
-                      deleteHandler={this.onDeleteBtnClick}
-                      showDelete={true}
-                      centered={false}
-                      fluid={false}
-                    />
-                  </Grid.Column>
-                ))}
-            </Grid.Row>
-          </Grid>
-        </div>
+        <CollectionList
+          photoList={photoList}
+          onDeleteBtnClick={this.onDeleteBtnClick}
+        />
       );
     }
   }

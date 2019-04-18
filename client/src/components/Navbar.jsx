@@ -1,7 +1,5 @@
 import React, { Component } from 'react';
-import DynamicNavbar from './DynamicNavbar';
 import {
-  Header,
   Menu,
   Responsive,
   Button,
@@ -9,6 +7,8 @@ import {
   Segment,
   Sidebar,
   Transition,
+  Image,
+  Dropdown,
   Icon,
   Form
 } from 'semantic-ui-react';
@@ -16,18 +16,20 @@ import { NavLink, withRouter } from 'react-router-dom';
 import { withCookies, Cookies } from 'react-cookie';
 import PropTypes from 'prop-types';
 import { compose } from 'recompose';
+import faker from 'faker';
+import DynamicNavbar from './DynamicNavbar';
 
 class Navbar extends Component {
   state = {
     visible: false,
     searchInputVisible: false,
-    search_input: ''
+    search_input: '',
+    activeItem: 'main'
   };
 
   handleItemClick = (e, { name }) => {
     console.log('handleItemClick()');
-    this.setState({ activeItem: name });
-    this.hideSidebar();
+    this.setState({ activeItem: name, visible: false });
     window.scroll(0, 0);
   };
   showSidebar = () => this.setState({ visible: true });
@@ -83,50 +85,41 @@ class Navbar extends Component {
       searchInputVisible,
       search_input
     } = this.state;
-
+    const trigger = (
+      <span>
+        <Image avatar src={faker.internet.avatar()} /> {this.props.username}
+      </span>
+    );
     return (
       <div>
         <Segment>
           <Menu secondary>
-            <Menu.Item header>
-              <NavLink to="/" style={{ color: '#2BBBAD' }}>
-                <Header
-                  as="h1"
-                  textAlign="center"
-                  size="huge"
-                  style={{
-                    fontFamily: "'Pacifico', cursive",
-                    color: '#ba68c8'
-                  }}
-                >
-                  Finstagram
-                </Header>
+            <Menu.Item
+              header
+              name="main"
+              onClick={this.handleItemClick}
+              as="h1"
+              size="huge"
+              style={{
+                fontFamily: "'Pacifico', cursive",
+                color: '#ba68c8'
+              }}
+            >
+              <NavLink to="/" style={{ color: '#ba68c8' }}>
+                Finstagram
               </NavLink>
             </Menu.Item>
-            <Menu.Item name={`Welcome, ${this.props.username}`} />
             <Menu.Menu position="right" style={{ margin: 0 }}>
-              <Responsive minWidth={768}>
-                <Menu.Item
-                  style={{ color: '#000', marginTop: '1rem' }}
-                  name="fav"
-                  active={activeItem === 'fav'}
-                  onClick={this.logout}
-                  position="right"
-                >
-                  Log out
-                </Menu.Item>
-              </Responsive>
-              <Responsive minWidth={768}>
+              <Responsive minWidth={768} as={Menu.Item}>
                 <Menu.Item
                   as={NavLink}
                   to="/gallery"
-                  style={{ color: '#000', marginTop: '1rem' }}
+                  style={{ color: '#000' }}
                   name="gallery"
                   active={activeItem === 'gallery'}
                   onClick={this.handleItemClick}
-                  position="right"
                 >
-                  <Icon name="user" color="violet" />
+                  <Icon name="image" color="violet" />
                   Gallery
                 </Menu.Item>
               </Responsive>
@@ -141,6 +134,25 @@ class Navbar extends Component {
                     onChange={this.onChange}
                   />
                 </Form>
+              </Responsive>
+
+              <Responsive minWidth={768}>
+                <Dropdown
+                  item
+                  trigger={trigger}
+                  icon={null}
+                  pointing="top left"
+                  color="violet"
+                  style={{ color: '#000', marginTop: '1rem' }}
+                >
+                  <Dropdown.Menu>
+                    <Dropdown.Item
+                      icon="power off"
+                      text="Log out"
+                      onClick={this.logout}
+                    />
+                  </Dropdown.Menu>
+                </Dropdown>
               </Responsive>
 
               <Menu.Item>

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Form, Button, Radio, Dropdown } from 'semantic-ui-react';
+import { Input, Form, Button, Radio, Dropdown } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 import { withCookies, Cookies } from 'react-cookie';
 import { withRouter } from 'react-router-dom';
@@ -35,7 +35,7 @@ class Upload extends Component {
       this.props.history.push('/');
     }
   }
-  // handle phot submit
+  // handle photo submit
   submitHandler = async e => {
     e.preventDefault();
     this.props.startLoader();
@@ -79,6 +79,7 @@ class Upload extends Component {
   onDescChange = e => {
     this.setState({ descText: e.target.value });
   };
+
   onVisibilityChange = (e, { value }) => {
     this.setState({
       isPublicPost: value,
@@ -117,6 +118,7 @@ class Upload extends Component {
               />
             </Form.Field>
           </Form.Group>
+
           <Form.Group>
             <label>Visibility</label>
             <Form.Radio

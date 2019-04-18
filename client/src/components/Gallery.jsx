@@ -1,10 +1,7 @@
 import React, { Component } from 'react';
-import Navbar from './Navbar';
-import PhotoList from './PhotoList';
-import Upload from './Upload';
 import {
   Button,
-  Image,
+  Grid,
   Dimmer,
   Loader,
   Container,
@@ -13,8 +10,12 @@ import {
 } from 'semantic-ui-react';
 import { withCookies, Cookies } from 'react-cookie';
 import PropTypes from 'prop-types';
+import Navbar from './Navbar';
+import PhotoList from './PhotoList';
+import Upload from './Upload';
+import FriendList from './FriendList';
 
-class Main extends Component {
+class Gallery extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -40,6 +41,7 @@ class Main extends Component {
   closeModal = () => {
     this.setState({ modalOpen: false, imageUploadPreviewURL: null });
   };
+
   fileInputOnChange = () => {
     if (this.fileInput) {
       this.setState({
@@ -55,18 +57,16 @@ class Main extends Component {
     return (
       <div>
         <Navbar username={this.props.username} />
-        <Container>
+        <Container style={{ marginTop: '2rem' }}>
           <Dimmer active={loading}>
             <Loader>Loading</Loader>
           </Dimmer>
-          {!this.props.public && (
-            <Button
-              onClick={this.openModal}
-              color="violet"
-              icon="add"
-              style={{ marginBottom: '2rem' }}
-            />
-          )}
+          <Button
+            onClick={this.openModal}
+            color="violet"
+            icon="add"
+            style={{ marginBottom: '2rem' }}
+          />
           <Modal dimmer="inverted" open={modalOpen} onClose={this.closeModal}>
             <Modal.Header>Select a Photo</Modal.Header>
             <Modal.Content image>
@@ -96,24 +96,32 @@ class Main extends Component {
                   stopLoader={this.stopLoader}
                   fileInputRef={this.fileInput}
                   fileInputOnChange={this.fileInputOnChange}
+                  urlInputOnChange={this.urlInputOnChange}
                   closeModal={this.closeModal}
+                  clearRef={this.clearRef}
                 />
               </Modal.Description>
             </Modal.Content>
           </Modal>
-
-          <PhotoList
-            showPublic={this.props.public}
-            loading={loading}
-            startLoader={this.startLoader}
-            stopLoader={this.stopLoader}
-          />
+          <Grid>
+            <Grid.Column width={11}>
+              <PhotoList
+                showPublic={false}
+                loading={loading}
+                startLoader={this.startLoader}
+                stopLoader={this.stopLoader}
+              />
+            </Grid.Column>
+            <Grid.Column floated="right" width={5}>
+              <FriendList />
+            </Grid.Column>
+          </Grid>
         </Container>
       </div>
     );
   }
 }
-Main.protoTypes = {
+Gallery.protoTypes = {
   cookies: PropTypes.instanceOf(Cookies)
 };
-export default withCookies(Main);
+export default withCookies(Gallery);

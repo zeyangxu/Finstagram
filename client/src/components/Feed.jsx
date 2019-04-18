@@ -1,7 +1,7 @@
 import React from 'react';
-import { Button, Card, Image, Icon } from 'semantic-ui-react';
+import { Dropdown, Button, Card, Image, Icon } from 'semantic-ui-react';
 
-export default function Photo({
+export default function Feed({
   img_url,
   owner_name,
   date,
@@ -13,7 +13,10 @@ export default function Photo({
   fluid,
   showDelete
 }) {
-  date = new Date(date).toLocaleDateString();
+  const locale_date = new Date(date).toLocaleDateString();
+  const locale_time = new Date(date).toLocaleTimeString('en-US', {
+    hour12: false
+  });
   return (
     <div style={{ marginBottom: '2rem' }}>
       <Card centered={centered} fluid={fluid}>
@@ -29,21 +32,12 @@ export default function Photo({
           />
         </div>
         <Card.Content>
-          <Card.Header>
-            {owner_name}
-            {showDelete && (
-              <Button
-                onClick={e => deleteHandler(photoID)}
-                icon="delete"
-                floated="right"
-                color="red"
-                compact
-              />
-            )}
-          </Card.Header>
+          <Card.Header>{owner_name}</Card.Header>
 
           <Card.Meta>
-            <span className="date">{date}</span>
+            <span className="date">
+              {locale_date} {locale_time}
+            </span>
           </Card.Meta>
           <Card.Description>{description}</Card.Description>
         </Card.Content>
@@ -58,6 +52,20 @@ export default function Photo({
               <Icon name="eye slash" />
               private
             </span>
+          )}
+          {showDelete && (
+            <Dropdown
+              icon="ellipsis horizontal"
+              style={{ position: 'absolute', right: 0, marginRight: '1rem' }}
+            >
+              <Dropdown.Menu>
+                <Dropdown.Item
+                  icon="trash"
+                  text="Delete"
+                  onClick={e => deleteHandler(photoID)}
+                />
+              </Dropdown.Menu>
+            </Dropdown>
           )}
         </Card.Content>
       </Card>

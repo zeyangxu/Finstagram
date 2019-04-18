@@ -106,6 +106,26 @@ response: {success, data \[{groupName, groupOwner}\]}
 
 Response a list of group names the user belong to
 
+### Follow
+
+#### GET `/api/follow/following/<sessionID>`
+
+response: {success, result: \[{followeeUsername}\]}
+
+Response a list of username that you follow
+
+#### GET `/api/follow/follower/<sessionID>`
+
+response: {success, result: \[{followerUsername}\]}
+
+Response a list of username that follow you
+
+#### GET `/api/follow/request/<sessionID>`
+
+response: {success, result: \[{followerUsername}\]}
+
+Response a list of username that sent follow request to you
+
 ## Todo
 
 - [x] Store session id in cookie

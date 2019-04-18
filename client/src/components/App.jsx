@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import { withRouter, Redirect, Route, Switch } from 'react-router-dom';
-import Login from './Login';
-import Main from './Main';
-import Signup from './Signup';
 import { withCookies, Cookies } from 'react-cookie';
 import PropTypes from 'prop-types';
 import { compose } from 'recompose';
+import Login from './Login';
+import Main from './Main';
+import Gallery from './Gallery';
+import Signup from './Signup';
 
 class App extends Component {
   constructor(props) {
@@ -83,7 +84,7 @@ class App extends Component {
             exact
             render={props =>
               isAuth ? (
-                <Main {...props} username={username} public={true} />
+                <Main {...props} username={username} />
               ) : (
                 <Redirect to="/login" />
               )
@@ -93,7 +94,7 @@ class App extends Component {
             path="/gallery"
             render={props =>
               isAuth ? (
-                <Main {...props} username={username} public={false} />
+                <Gallery {...props} username={username} />
               ) : (
                 <Redirect to="/login" />
               )
