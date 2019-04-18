@@ -4,7 +4,9 @@ const express = require('express'),
   bunyan = require('bunyan'),
   multer = require('multer'),
   uuid = require('uuid/v4'),
-  path = require('path');
+  path = require('path'),
+  request = require('request'),
+  fs = require('fs');
 
 const errHandler = require('../../helpers/error-handle'),
   findUser = require('../../helpers/find-user'),
@@ -46,7 +48,7 @@ const upload = multer({
     }
   }
 }).single('userpost');
-
+// save photo direct from user upload
 router.post('/photo', (req, res, next) => {
   upload(req, res, async err => {
     if (err) {
@@ -61,19 +63,6 @@ router.post('/photo', (req, res, next) => {
     } else {
       try {
         const username = await findUser(req.body.active_session_id, res);
-        log.info({
-          func: 'finduser callback',
-          file_extension: path.extname(req.file.originalname),
-          sessionID: req.body.active_session_id,
-          description: req.body.description,
-          ownerList: req.body.groupOwnerList,
-          isPublic: {
-            value: req.body.isPublic,
-            type: typeof parseInt(req.body.isPublic)
-          },
-          username: username,
-          file: req.file
-        });
         const result = await conn.query(
           `INSERT INTO Photo (photoID, photoOwner, filePath, caption, allFollowers) VALUES (NULL, ?, ?, ?, ?)`,
           [
@@ -103,4 +92,50 @@ router.post('/photo', (req, res, next) => {
     }
   });
 });
+// download from image url and save it locally
+router.post('/photo_url', (req, res, next) => {
+  const { photo_url } = req.body;
+  const id = uuid();
+  const file_path = `public/uploads/post/${id}.png`;
+  download(photo_url, file_path, async () => {
+    console.log('done');
+    try {
+      const username = await findUser(req.body.active_session_id, res);
+      const result = await conn.query(
+        `INSERT INTO Photo (photoID, photoOwner, filePath, caption, allFollowers) VALUES (NULL, ?, ?, ?, ?)`,
+        [username, file_path, req.body.description, parseInt(req.body.isPublic)]
+      );
+
+      log.info({
+        func: 'insert photo query',
+        insertId: result.insertId
+      });
+      if (req.body.isPublic === '1') {
+        const result2 = await conn.query(
+          `INSERT INTO Share (groupName, groupOwner, photoID) VALUES (?, ?, ?)`,
+          [req.body.groupName, req.body.groupOwner, result.insertId]
+        );
+
+        log.info({ func: 'insert photo share' });
+      }
+      res.status(200).json({ success: true });
+    } catch (err) {
+      errHandler(err, res, debug, log, next);
+    }
+  });
+});
+
+const download = (uri, filename, callback) => {
+  request.head(uri, function(err, res, body) {
+    console.log('content-type:', res.headers['content-type']);
+    console.log('content-length:', res.headers['content-length']);
+    if (err) {
+      errHandler(err, res, debug, log, next);
+    }
+    request(uri)
+      .pipe(fs.createWriteStream(filename))
+      .on('close', callback);
+  });
+};
+
 module.exports = router;
