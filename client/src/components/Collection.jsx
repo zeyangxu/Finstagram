@@ -4,17 +4,19 @@ import { Dropdown, Button, Card, Image, Icon } from 'semantic-ui-react';
 export default function Photo({
   img_url,
   owner_name,
-  date,
-  description,
+  timestamp,
+  caption,
   deleteHandler,
   photoID,
   isPublic,
   centered,
   fluid,
-  showDelete
+  showDelete,
+  groupName,
+  groupOwner
 }) {
-  const locale_date = new Date(date).toLocaleDateString();
-  const locale_time = new Date(date).toLocaleTimeString('en-US', {
+  const locale_date = new Date(timestamp).toLocaleDateString();
+  const locale_time = new Date(timestamp).toLocaleTimeString('en-US', {
     hour12: false
   });
   return (
@@ -39,7 +41,7 @@ export default function Photo({
               {locale_date} {locale_time}
             </span>
           </Card.Meta>
-          <Card.Description>{description}</Card.Description>
+          <Card.Description>{caption}</Card.Description>
         </Card.Content>
         <Card.Content extra>
           {isPublic ? (
@@ -49,8 +51,8 @@ export default function Photo({
             </span>
           ) : (
             <span>
-              <Icon name="eye slash" />
-              private
+              <Icon name="users" />
+              {groupName}
             </span>
           )}
           {showDelete && (

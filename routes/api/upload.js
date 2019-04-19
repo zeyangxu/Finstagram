@@ -77,7 +77,7 @@ router.post('/photo', (req, res, next) => {
           func: 'insert photo query',
           insertId: result.insertId
         });
-        if (req.body.isPublic === '1') {
+        if (req.body.isPublic === '0') {
           const result2 = await conn.query(
             `INSERT INTO Share (groupName, groupOwner, photoID) VALUES (?, ?, ?)`,
             [req.body.groupName, req.body.groupOwner, result.insertId]

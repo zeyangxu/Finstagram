@@ -18,6 +18,7 @@ import PropTypes from 'prop-types';
 import { compose } from 'recompose';
 import faker from 'faker';
 import DynamicNavbar from './DynamicNavbar';
+import Search from './Search';
 
 class Navbar extends Component {
   state = {
@@ -125,14 +126,7 @@ class Navbar extends Component {
               </Responsive>
               <Responsive minWidth={768} as={Menu.Item}>
                 <Form onSubmit={this.toSearchPage}>
-                  <Input
-                    value={search_input}
-                    className="searchInput"
-                    icon="search"
-                    ref={this.handleRef}
-                    placeholder="Search..."
-                    onChange={this.onChange}
-                  />
+                  <Search />
                 </Form>
               </Responsive>
 

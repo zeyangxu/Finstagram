@@ -13,7 +13,7 @@ class Upload extends Component {
       isPublicPost: '1',
       groupList: [],
       groupSelect: null,
-      showGroupSelect: true
+      showGroupSelect: false
     };
   }
   async componentDidMount() {
@@ -83,7 +83,7 @@ class Upload extends Component {
   onVisibilityChange = (e, { value }) => {
     this.setState({
       isPublicPost: value,
-      showGroupSelect: value === '1' ? true : false
+      showGroupSelect: value === '0' ? true : false
     });
   };
   groupSelectOnChange = (e, { value }) => {
@@ -93,13 +93,16 @@ class Upload extends Component {
   };
   render() {
     const { descText, isPublicPost, groupList, showGroupSelect } = this.state;
-    const options = groupList.map((i, index) => {
-      return {
-        key: i.groupName + i.groupOwner,
-        text: `${i.groupName} - ${i.groupOwner}`,
-        value: index
-      };
-    });
+    let options = [];
+    if (groupList) {
+      options = groupList.map((i, index) => {
+        return {
+          key: i.groupName + i.groupOwner,
+          text: `${i.groupName} - ${i.groupOwner}`,
+          value: index
+        };
+      });
+    }
     return (
       <div>
         <Form onSubmit={this.submitHandler}>

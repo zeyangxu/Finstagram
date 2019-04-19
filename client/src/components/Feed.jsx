@@ -4,17 +4,19 @@ import { Dropdown, Button, Card, Image, Icon } from 'semantic-ui-react';
 export default function Feed({
   img_url,
   owner_name,
-  date,
-  description,
+  timestamp,
+  caption,
   deleteHandler,
   photoID,
   isPublic,
   centered,
   fluid,
-  showDelete
+  showDelete,
+  groupName,
+  groupOwner
 }) {
-  const locale_date = new Date(date).toLocaleDateString();
-  const locale_time = new Date(date).toLocaleTimeString('en-US', {
+  const locale_date = new Date(timestamp).toLocaleDateString();
+  const locale_time = new Date(timestamp).toLocaleTimeString('en-US', {
     hour12: false
   });
   return (
@@ -39,35 +41,16 @@ export default function Feed({
               {locale_date} {locale_time}
             </span>
           </Card.Meta>
-          <Card.Description>{description}</Card.Description>
+          <Card.Description>{caption}</Card.Description>
         </Card.Content>
-        <Card.Content extra>
-          {isPublic ? (
+        {isPublic ? null : (
+          <Card.Content extra>
             <span>
-              <Icon name="eye" />
-              public
+              <Icon name="users" />
+              {groupName}
             </span>
-          ) : (
-            <span>
-              <Icon name="eye slash" />
-              private
-            </span>
-          )}
-          {showDelete && (
-            <Dropdown
-              icon="ellipsis horizontal"
-              style={{ position: 'absolute', right: 0, marginRight: '1rem' }}
-            >
-              <Dropdown.Menu>
-                <Dropdown.Item
-                  icon="trash"
-                  text="Delete"
-                  onClick={e => deleteHandler(photoID)}
-                />
-              </Dropdown.Menu>
-            </Dropdown>
-          )}
-        </Card.Content>
+          </Card.Content>
+        )}
       </Card>
     </div>
   );

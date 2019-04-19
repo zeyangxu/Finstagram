@@ -61,6 +61,10 @@ class Gallery extends Component {
       <div>
         <Navbar username={this.props.username} />
         <Container style={{ marginTop: '2rem' }}>
+          <Header as="h1" icon textAlign="center">
+            <Image avatar size="massive" src={faker.internet.avatar()} />
+            <Header.Content>{this.props.match.params.username}</Header.Content>
+          </Header>
           <Dimmer active={loading}>
             <Loader>Loading</Loader>
           </Dimmer>
@@ -107,16 +111,13 @@ class Gallery extends Component {
             </Modal.Content>
           </Modal>
           <Grid>
-            <Grid.Column width={11}>
+            <Grid.Column>
               <PhotoList
                 showPublic={false}
                 loading={loading}
                 startLoader={this.startLoader}
                 stopLoader={this.stopLoader}
               />
-            </Grid.Column>
-            <Grid.Column floated="right" width={5}>
-              <FriendList />
             </Grid.Column>
           </Grid>
         </Container>

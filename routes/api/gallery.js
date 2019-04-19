@@ -12,11 +12,12 @@ const conn = require('../../helpers/conn'),
 const log = bunyan.createLogger({ name: 'gallery' });
 const unlink = util.promisify(fs.unlink);
 
+// get all uploaded photos
 router.get('/:id', async (req, res, next) => {
   try {
     const username = await findUser(req.params.id, res);
     const result = await conn.query(
-      `SELECT filePath, photoID, timestamp, caption, allFollowers FROM Photo WHERE photoOwner='${username}'`
+      `SELECT * FROM Photo LEFT OUTER JOIN Share USING(photoID) WHERE photoOwner='${username}'`
     );
     const pathList = result
       .map(i => {
@@ -26,7 +27,9 @@ router.get('/:id', async (req, res, next) => {
           photoID: i.photoID,
           timestamp: i.timestamp,
           caption: i.caption,
-          isPublic: i.allFollowers
+          isPublic: i.allFollowers,
+          groupName: i.groupName,
+          groupOwner: i.groupOwner
         };
       })
       .reverse();
@@ -55,19 +58,7 @@ router.delete('/', async (req, res, next) => {
     } else {
       throw new Error('photoID not found');
     }
-    // if the photo is public, first delete the row in Share table
-    // if (isPublic) {
-    //   log.info('isPublic');
-    //   const result1 = await conn.query(
-    //     `DELETE FROM Share WHERE photoID ='${photoID}'`
-    //   );
-    //   if (result1.affectedRows === 1) {
-    //     log.info('delete photo in share table success');
-    //   } else {
-    //     throw new Error('delete multiple rows');
-    //   }
-    // }
-    // delete
+
     const result = await conn.query(
       `DELETE FROM Photo WHERE photoID=? AND photoOwner=?`,
       [photoID, username]

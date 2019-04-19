@@ -13,11 +13,7 @@ export default function CollectionList({ photoList, onDeleteBtnClick }) {
                 <Collection
                   img_url={'http://localhost:5000' + i.filePath}
                   key={i.photoID}
-                  photoID={i.photoID}
-                  owner_name={i.username}
-                  date={i.timestamp}
-                  isPublic={i.isPublic}
-                  description={i.caption}
+                  {...i}
                   deleteHandler={onDeleteBtnClick}
                   showDelete={true}
                   centered={false}

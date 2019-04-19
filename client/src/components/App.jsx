@@ -7,6 +7,7 @@ import Login from './Login';
 import Main from './Main';
 import Gallery from './Gallery';
 import Signup from './Signup';
+import OtherUser from './OtherUser';
 
 class App extends Component {
   constructor(props) {
@@ -100,6 +101,7 @@ class App extends Component {
               )
             }
           />
+          <Route path="/:username" render={props => <OtherUser {...props} />} />
         </Switch>
       </>
     );
