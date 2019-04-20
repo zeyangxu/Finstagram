@@ -28,20 +28,15 @@ router.get('/user/', async (req, res, next) => {
 });
 
 // @get all user result
-router.get('/all/:id', async (req, res, next) => {
-  const id = req.params.id;
+router.get('/all', async (req, res, next) => {
   const keyword = req.query.keyword;
   try {
-    const username = await findUser(id, res, next);
     const result = await conn.query(
       `SELECT
-    Person.username, Follow.acceptedfollow, Person.fname, Person.lname
+    username, fname, lname
     FROM 
-    Person LEFT OUTER JOIN Follow 
-    ON Person.username = Follow.followeeUsername 
-    AND Follow.followerUsername=?
-    WHERE Person.username!=? AND Person.username LIKE '%${keyword}%'`,
-      [username, username]
+    Person  
+    WHERE username LIKE '%${keyword}%'`
     );
     res.status(200).json({ success: true, result });
   } catch (err) {

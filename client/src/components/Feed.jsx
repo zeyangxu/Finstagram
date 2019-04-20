@@ -1,5 +1,5 @@
 import React from 'react';
-import { Dropdown, Button, Card, Image, Icon } from 'semantic-ui-react';
+import { Card, Image, Icon } from 'semantic-ui-react';
 
 export default function Feed({
   img_url,

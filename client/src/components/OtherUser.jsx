@@ -5,8 +5,6 @@ import {
   Dimmer,
   Loader,
   Container,
-  Modal,
-  Placeholder,
   Header,
   Image
 } from 'semantic-ui-react';
@@ -15,21 +13,41 @@ import { withCookies, Cookies } from 'react-cookie';
 import PropTypes from 'prop-types';
 import Navbar from './Navbar';
 import PhotoList from './PhotoList';
-import Upload from './Upload';
-import FriendList from './FriendList';
 
-class Gallery extends Component {
+class OtherUser extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      photoList: [],
       loading: false,
-      modalOpen: false,
-      imageUploadPreviewURL: null
+      followState: 'Follow'
     };
     this.fileInput = React.createRef();
   }
-
+  // check isFollow
+  checkFollow = async () => {
+    const { cookies } = this.props;
+    const sessionID = cookies.cookies.sessionID;
+    if (this.props.match.params.username === this.props.username) {
+      this.setState({ followState: 'yourself' });
+      return;
+    }
+    try {
+      const res = await fetch(
+        `/api/follow/isfollow/${sessionID}?user=${
+          this.props.match.params.username
+        }`
+      );
+      const json = await res.json();
+      if (res.status === 200) {
+        this.setState({ followState: json.result });
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+  async componentDidMount() {
+    this.checkFollow();
+  }
   startLoader = () => {
     console.log('startLoader()');
     this.setState({ loading: true });
@@ -38,82 +56,64 @@ class Gallery extends Component {
     console.log('stopLoader()');
     this.setState({ loading: false });
   };
-  openModal = () => {
-    this.setState({ modalOpen: true });
-  };
-  closeModal = () => {
-    this.setState({ modalOpen: false, imageUploadPreviewURL: null });
-  };
-
-  fileInputOnChange = () => {
-    if (this.fileInput) {
-      this.setState({
-        imageUploadPreviewURL: URL.createObjectURL(
-          this.fileInput.current.files[0]
-        )
-      });
+  handleFollowClick = async () => {
+    // make a follow request
+    const { cookies } = this.props;
+    const sessionID = cookies.cookies.sessionID;
+    const res = await fetch(
+      `/api/follow/request/${sessionID}?user=${
+        this.props.match.params.username
+      }`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+    if (res.status === 200) {
+      this.checkFollow();
+    } else {
+      console.error('request follow failed');
     }
   };
-
+  componentDidUpdate(prevProps, prevState) {
+    if (prevProps.location !== this.props.location) {
+      this.checkFollow();
+    }
+  }
   render() {
-    const { loading, modalOpen, imageUploadPreviewURL } = this.state;
+    const { loading, followState } = this.state;
     return (
       <div>
         <Navbar username={this.props.username} />
         <Container style={{ marginTop: '2rem' }}>
-          <Header as="h1" icon textAlign="center">
+          <Header
+            as="h1"
+            icon
+            textAlign="center"
+            style={{ marginBottom: '5rem' }}
+          >
             <Image avatar size="massive" src={faker.internet.avatar()} />
             <Header.Content>{this.props.match.params.username}</Header.Content>
+            {followState !== 'yourself' && (
+              <Button
+                disabled={followState !== 'Follow'}
+                color="blue"
+                onClick={this.handleFollowClick}
+              >
+                {followState}
+              </Button>
+            )}
           </Header>
           <Dimmer active={loading}>
             <Loader>Loading</Loader>
           </Dimmer>
-          <Button
-            onClick={this.openModal}
-            color="violet"
-            icon="add"
-            style={{ marginBottom: '2rem' }}
-          />
-          <Modal dimmer="inverted" open={modalOpen} onClose={this.closeModal}>
-            <Modal.Header>Select a Photo</Modal.Header>
-            <Modal.Content image>
-              {imageUploadPreviewURL ? (
-                <div style={{ height: 300, width: 300, marginRight: '2rem' }}>
-                  <img
-                    alt="upload-img"
-                    src={imageUploadPreviewURL}
-                    style={{
-                      maxHeight: '100%',
-                      maxWidth: '100%',
-                      display: 'block',
-                      margin: 'auto'
-                    }}
-                  />
-                </div>
-              ) : (
-                <Placeholder
-                  style={{ height: 150, width: 150, marginRight: '2rem' }}
-                >
-                  <Placeholder.Image />
-                </Placeholder>
-              )}
-              <Modal.Description>
-                <Upload
-                  startLoader={this.startLoader}
-                  stopLoader={this.stopLoader}
-                  fileInputRef={this.fileInput}
-                  fileInputOnChange={this.fileInputOnChange}
-                  urlInputOnChange={this.urlInputOnChange}
-                  closeModal={this.closeModal}
-                  clearRef={this.clearRef}
-                />
-              </Modal.Description>
-            </Modal.Content>
-          </Modal>
+
           <Grid>
             <Grid.Column>
               <PhotoList
-                showPublic={false}
+                fetchType="otheruser"
                 loading={loading}
                 startLoader={this.startLoader}
                 stopLoader={this.stopLoader}
@@ -125,7 +125,7 @@ class Gallery extends Component {
     );
   }
 }
-Gallery.protoTypes = {
+OtherUser.protoTypes = {
   cookies: PropTypes.instanceOf(Cookies)
 };
-export default withCookies(Gallery);
+export default withCookies(OtherUser);

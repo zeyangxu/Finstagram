@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Input, Form, Button, Radio, Dropdown } from 'semantic-ui-react';
+import { Form, Button, Radio, Dropdown } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 import { withCookies, Cookies } from 'react-cookie';
 import { withRouter } from 'react-router-dom';

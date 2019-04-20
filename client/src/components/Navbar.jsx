@@ -10,7 +10,9 @@ import {
   Image,
   Dropdown,
   Icon,
-  Form
+  Form,
+  Label,
+  Item
 } from 'semantic-ui-react';
 import { NavLink, withRouter } from 'react-router-dom';
 import { withCookies, Cookies } from 'react-cookie';
@@ -25,9 +27,31 @@ class Navbar extends Component {
     visible: false,
     searchInputVisible: false,
     search_input: '',
-    activeItem: 'main'
+    activeItem: 'main',
+    requestList: [],
+    requestNum: null
   };
-
+  getData = async () => {
+    const { cookies } = this.props;
+    const sessionID = cookies.cookies.sessionID;
+    try {
+      const res = await fetch(`/api/follow/request/${sessionID}`);
+      const json = await res.json();
+      if (res.status === 200) {
+        this.setState({
+          requestNum: json.result.length,
+          requestList: json.result
+        });
+      } else if (res.status === 400) {
+        this.props.history.push('/login');
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+  componentDidMount() {
+    this.getData();
+  }
   handleItemClick = (e, { name }) => {
     console.log('handleItemClick()');
     this.setState({ activeItem: name, visible: false });
@@ -78,19 +102,54 @@ class Navbar extends Component {
     }
     this.props.history.push('/login');
   };
+  reject = async user => {
+    const { cookies } = this.props;
+    const sessionID = cookies.cookies.sessionID;
+    try {
+      const res = await fetch(`/api/follow/reject/${sessionID}?user=${user}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      if (res.status === 200) {
+        this.getData();
+      } else {
+        alert('soemthing wrong');
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+  accept = async user => {
+    const { cookies } = this.props;
+    const sessionID = cookies.cookies.sessionID;
+    try {
+      const res = await fetch(`/api/follow/accept/${sessionID}?user=${user}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      if (res.status === 200) {
+        this.getData();
+      } else {
+        alert('soemthing wrong');
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   render() {
     const {
       activeItem,
       visible,
       searchInputVisible,
-      search_input
+      search_input,
+      requestList,
+      requestNum
     } = this.state;
-    const trigger = (
-      <span>
-        <Image avatar src={faker.internet.avatar()} /> {this.props.username}
-      </span>
-    );
     return (
       <div>
         <Segment>
@@ -124,22 +183,85 @@ class Navbar extends Component {
                   Gallery
                 </Menu.Item>
               </Responsive>
+
               <Responsive minWidth={768} as={Menu.Item}>
                 <Form onSubmit={this.toSearchPage}>
                   <Search />
                 </Form>
               </Responsive>
 
+              <Responsive minWidth={768} as={Menu.Item}>
+                <Dropdown
+                  trigger={
+                    <>
+                      <Icon name="add user" />
+                      {requestNum !== 0 && (
+                        <Label color="red" floating>
+                          {requestNum}
+                        </Label>
+                      )}
+                    </>
+                  }
+                  pointing="top right"
+                  color="violet"
+                  fluid
+                  style={{ color: '#000' }}
+                >
+                  <Dropdown.Menu>
+                    <Item.Group>
+                      {requestList.map(i => {
+                        return (
+                          <Item key={i.followerUsername}>
+                            <Item.Image
+                              size="tiny"
+                              src={faker.internet.avatar()}
+                            />
+                            <Item.Content verticalAlign="middle">
+                              {i.followerUsername}
+                              <Item.Extra>
+                                <Button
+                                  onClick={() =>
+                                    this.accept(i.followerUsername)
+                                  }
+                                  size="mini"
+                                  primary
+                                >
+                                  Accept
+                                </Button>
+                                <Button
+                                  onClick={() =>
+                                    this.reject(i.followerUsername)
+                                  }
+                                  size="mini"
+                                >
+                                  Remove
+                                </Button>
+                              </Item.Extra>
+                            </Item.Content>
+                          </Item>
+                        );
+                      })}
+                    </Item.Group>
+                  </Dropdown.Menu>
+                </Dropdown>
+              </Responsive>
+
               <Responsive minWidth={768}>
                 <Dropdown
                   item
-                  trigger={trigger}
+                  trigger={
+                    <span>
+                      <Image avatar src={faker.internet.avatar()} />{' '}
+                      {this.props.username}
+                    </span>
+                  }
                   icon={null}
-                  pointing="top left"
+                  pointing="top right"
                   color="violet"
                   style={{ color: '#000', marginTop: '1rem' }}
                 >
                   <Dropdown.Menu>
+                    <Dropdown.Item icon="add user" text="Request" />
                     <Dropdown.Item
                       icon="power off"
                       text="Log out"

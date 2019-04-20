@@ -37,7 +37,7 @@ class Main extends Component {
           <Grid>
             <Grid.Column width={11}>
               <PhotoList
-                showPublic={true}
+                fetchType="main"
                 loading={loading}
                 startLoader={this.startLoader}
                 stopLoader={this.stopLoader}

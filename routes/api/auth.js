@@ -61,7 +61,7 @@ router.post('/', async (req, res, next) => {
     const result = await conn.query(
       `SELECT password FROM Person WHERE username='${username}'`
     );
-    log.info({ function: 'sql connection query', result: result });
+    log.info({ function: 'sql connection query' });
     if (result[0]) {
       // authenticate password
       const pass = await compare(password, result[0].password);

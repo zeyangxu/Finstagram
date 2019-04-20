@@ -5,6 +5,7 @@ import { withRouter } from 'react-router-dom';
 import { compose } from 'recompose';
 import FeedList from './FeedList';
 import CollectionList from './CollectionList';
+import OtherUserCollectionList from './OtherUserCollectionList';
 
 class PhotoList extends Component {
   state = {
@@ -20,12 +21,25 @@ class PhotoList extends Component {
 
   // fetch gallery api endpoint
   fetchPhoto = async () => {
-    const { showPublic } = this.props;
+    const { fetchType } = this.props;
     const sessionID = this.getSession();
-    const endpoint = showPublic ? '/api/photo' : '/api/gallery';
-    console.log('fetching from: ', `${endpoint}/${sessionID}`);
+    let endpoint = '';
+    switch (fetchType) {
+      case 'main':
+        endpoint = `/api/photo/${sessionID}`;
+        break;
+      case 'gallery':
+        endpoint = `/api/gallery/${sessionID}`;
+        break;
+      case 'otheruser':
+        endpoint = `/api/photo/user/${this.props.match.params.username}`;
+        break;
+      default:
+        endpoint = '';
+    }
+    console.log('fetching from: ', endpoint);
     try {
-      const res = await fetch(`${endpoint}/${sessionID}`);
+      const res = await fetch(endpoint);
       const json = await res.json();
       if (res.status === 200) {
         this.setState({ photoList: json.data });
@@ -44,7 +58,8 @@ class PhotoList extends Component {
   componentDidUpdate(prevProps, prevState) {
     if (
       prevProps.loading !== this.props.loading ||
-      prevProps.showPublic !== this.props.showPublic
+      prevProps.showPublic !== this.props.showPublic ||
+      this.props.location !== prevProps.location
     ) {
       this.fetchPhoto();
       console.log('PhotoList componentDidUpdate side effect fetch');
@@ -70,20 +85,25 @@ class PhotoList extends Component {
   render() {
     const { photoList } = this.state;
     console.log('PhotoList render');
-    if (this.props.showPublic) {
-      return (
-        <FeedList
-          photoList={photoList}
-          onDeleteBtnClick={this.onDeleteBtnClick}
-        />
-      );
-    } else {
-      return (
-        <CollectionList
-          photoList={photoList}
-          onDeleteBtnClick={this.onDeleteBtnClick}
-        />
-      );
+    switch (this.props.fetchType) {
+      case 'main':
+        return (
+          <FeedList
+            photoList={photoList}
+            onDeleteBtnClick={this.onDeleteBtnClick}
+          />
+        );
+      case 'gallery':
+        return (
+          <CollectionList
+            photoList={photoList}
+            onDeleteBtnClick={this.onDeleteBtnClick}
+          />
+        );
+      case 'otheruser':
+        return <OtherUserCollectionList photoList={photoList} />;
+      default:
+        return null;
     }
   }
 }

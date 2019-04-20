@@ -22,7 +22,7 @@ class App extends Component {
     console.log('app componentWillMount');
     this.authWithSession();
   }
-  // call fetch method with session id in cookies
+  // call authFetchPost() with session id in cookies
   authWithSession = async () => {
     const { cookies } = this.props;
     const sessionID = cookies.cookies.sessionID;
@@ -33,6 +33,7 @@ class App extends Component {
         if (auth) {
           console.log('auth success');
           this.setState({ isAuth: true });
+          this.props.history.push('/');
         } else {
           this.setState({ isAuth: false });
           this.props.history.push('/login');
@@ -101,7 +102,10 @@ class App extends Component {
               )
             }
           />
-          <Route path="/:username" render={props => <OtherUser {...props} />} />
+          <Route
+            path="/user/:username"
+            render={props => <OtherUser {...props} username={username} />}
+          />
         </Switch>
       </>
     );

@@ -6,11 +6,8 @@ import {
   Loader,
   Container,
   Modal,
-  Placeholder,
-  Header,
-  Image
+  Placeholder
 } from 'semantic-ui-react';
-import faker from 'faker';
 import { withCookies, Cookies } from 'react-cookie';
 import PropTypes from 'prop-types';
 import Navbar from './Navbar';
@@ -109,7 +106,7 @@ class Gallery extends Component {
           <Grid>
             <Grid.Column width={11}>
               <PhotoList
-                showPublic={false}
+                fetchType="gallery"
                 loading={loading}
                 startLoader={this.startLoader}
                 stopLoader={this.stopLoader}
