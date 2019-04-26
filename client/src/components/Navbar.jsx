@@ -261,7 +261,6 @@ class Navbar extends Component {
                   style={{ color: '#000', marginTop: '1rem' }}
                 >
                   <Dropdown.Menu>
-                    <Dropdown.Item icon="add user" text="Request" />
                     <Dropdown.Item
                       icon="power off"
                       text="Log out"

@@ -10,11 +10,20 @@ const log = bunyan.createLogger({ name: 'photo' });
 
 // get your main page photo
 router.get('/:id', async (req, res, next) => {
+  const sessionID = req.params.id;
+
   try {
     // validate the session
-    await findUser(req.params.id, res, next);
+    const username = await findUser(req.params.id, res, next);
     const result = await conn.query(
-      `SELECT photoOwner, filePath, photoID, timestamp, caption, allFollowers FROM Photo WHERE allFollowers=1`
+      `SELECT * FROM Photo 
+      WHERE allFollowers=1 
+      AND photoOwner IN
+      (SELECT followeeUsername FROM Follow 
+        WHERE followerUsername=? AND acceptedfollow=1) 
+        OR photoID IN 
+      (SELECT photoID FROM Photo WHERE photoOwner=? AND allFollowers=1)`,
+      [username, username]
     );
 
     const pathList = result

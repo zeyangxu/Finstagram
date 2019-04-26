@@ -3,7 +3,7 @@ import { Card, Image, Icon } from 'semantic-ui-react';
 
 export default function Feed({
   img_url,
-  owner_name,
+  username,
   timestamp,
   caption,
   deleteHandler,
@@ -34,7 +34,7 @@ export default function Feed({
           />
         </div>
         <Card.Content>
-          <Card.Header>{owner_name}</Card.Header>
+          <Card.Header>{username}</Card.Header>
 
           <Card.Meta>
             <span className="date">

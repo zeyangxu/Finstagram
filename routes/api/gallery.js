@@ -40,10 +40,10 @@ router.get('/:id', async (req, res, next) => {
   }
 });
 
-router.delete('/', async (req, res, next) => {
+router.delete('/:id', async (req, res, next) => {
   try {
     const photoID = req.query.photo;
-    const sessionID = req.query.session;
+    const sessionID = req.params.id;
     log.info({ photoID, sessionID });
     const username = await findUser(sessionID, res);
     let filePath, isPublic;
@@ -57,6 +57,16 @@ router.delete('/', async (req, res, next) => {
       isPublic = pathResult[0].allFollowers == 1 ? true : false;
     } else {
       throw new Error('photoID not found');
+    }
+    // if the photo is not public, delete the photo in Share table first
+    if (!isPublic) {
+      const res = await conn.query(
+        `DELETE FROM Share WHERE photoID=?`,
+        photoID
+      );
+      if (res.affectedRows !== 1) {
+        throw new Error('private photo not found in Share table');
+      }
     }
 
     const result = await conn.query(
