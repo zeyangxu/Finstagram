@@ -20,7 +20,8 @@ class MySearch extends Component {
 
   handleResultSelect = (e, { result }) => {
     if (this.props.mode === 'invite') {
-      this.setState({ value: result.title });
+      this.props.addUser(result.title);
+      this.setState({ value: '' });
     } else {
       this.props.history.push(`/user/${result.title}`);
     }

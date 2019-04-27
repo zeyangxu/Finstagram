@@ -16,6 +16,7 @@ import { withCookies, Cookies } from 'react-cookie';
 import { withRouter } from 'react-router-dom';
 import { compose } from 'recompose';
 import Search from './Search';
+import MultiSearch from './MultiSelectSearch';
 
 class NestedModal extends Component {
   state = { open: false };
@@ -84,7 +85,8 @@ class GroupList extends Component {
     newGroupName: '',
     showWarningMsg: false,
     errMsgList: [],
-    selectedGroupName: ''
+    selectedGroupName: '',
+    groupMemberList: []
   };
   getData = async () => {
     const { cookies } = this.props;
@@ -105,9 +107,14 @@ class GroupList extends Component {
   componentDidMount() {
     this.getData();
   }
-  openItemModal = (e, { name }) => {
+  openItemModal = async (e, { name }) => {
     console.log('target: ' + name);
-    this.setState({ modalOpen: true, selectedGroupName: name });
+    const list = await this.getGroupUsers(name);
+    this.setState({
+      modalOpen: true,
+      selectedGroupName: name,
+      groupMemberList: list
+    });
   };
   closeItemModal = () => {
     this.setState({ modalOpen: false });
@@ -141,12 +148,56 @@ class GroupList extends Component {
       });
       const json = await res.json();
       if (res.status === 200) {
+        this.setState({ newGroupName: '' });
         this.getData();
       } else if (res.status === 400) {
         this.props.history.push('/login');
       }
     } catch (err) {
       console.error(err);
+    }
+  };
+  getGroupUsers = async groupName => {
+    const { cookies } = this.props;
+    const sessionID = cookies.cookies.sessionID;
+    try {
+      const res = await fetch(
+        `/api/groups/users/${sessionID}?groupName=${groupName}`
+      );
+      const json = await res.json();
+      if (res.status === 200) {
+        console.log('getGroupUsers: ' + json.data);
+        return json.data;
+      }
+    } catch (err) {
+      this.props.history.push('/');
+    }
+  };
+  addUser = async username => {
+    const { cookies } = this.props;
+    const { selectedGroupName } = this.state;
+    const sessionID = cookies.cookies.sessionID;
+    try {
+      if (username === this.props.username) {
+        alert("you can't add yourself to a group you own");
+        return;
+      }
+      const res = await fetch(`/api/groups/add/${sessionID}`, {
+        method: 'POST',
+        mode: 'cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          groupName: selectedGroupName,
+          inviteUserName: username
+        })
+      });
+
+      if (res.status === 200) {
+        const list = await this.getGroupUsers(selectedGroupName);
+        this.setState({ groupMemberList: list });
+      }
+    } catch (err) {
+      this.props.history.push('/');
     }
   };
 
@@ -158,7 +209,8 @@ class GroupList extends Component {
       newGroupName,
       showWarningMsg,
       errMsgList,
-      selectedGroupName
+      selectedGroupName,
+      groupMemberList
     } = this.state;
     return (
       <div>
@@ -190,7 +242,12 @@ class GroupList extends Component {
           <Modal.Header>Invite a user</Modal.Header>
           <Modal.Content image>
             <Modal.Description>
-              <Search mode="invite" />
+              <ul>
+                {groupMemberList.map(i => {
+                  return <li key={i}>{i}</li>;
+                })}
+              </ul>
+              <Search mode="invite" addUser={this.addUser} />
             </Modal.Description>
             <Modal.Actions>
               <NestedModal

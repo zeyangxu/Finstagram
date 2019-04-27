@@ -7,7 +7,12 @@ import { withRouter } from 'react-router-dom';
 import { compose } from 'recompose';
 
 class MultiSelectSearch extends Component {
-  state = { source: null, value: [] };
+  state = {
+    source: null,
+    results: [],
+    searchQuery: '',
+    selectedValue: ['leo']
+  };
 
   async componentDidMount() {}
 
@@ -16,7 +21,11 @@ class MultiSelectSearch extends Component {
   }
 
   resetComponent = () =>
-    this.setState({ isLoading: false, results: [], value: '' });
+    this.setState({
+      isLoading: false,
+      results: [],
+      searchQuery: ''
+    });
 
   // handleResultSelect = (e, { result }) => {
   //   if (this.props.mode === 'invite') {
@@ -26,19 +35,20 @@ class MultiSelectSearch extends Component {
   //   }
   // };
 
-  handleSearchChange = async (e, { value }) => {
-    await this.setState({ isLoading: true, value });
-    const input = this.state.value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  handleSearchChange = async (e, { searchQuery }) => {
+    await this.setState({ isLoading: true, searchQuery });
+    const input = searchQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     let results = [];
     try {
       const res = await fetch(`/api/search/all?keyword=${input}`);
       if (res.status === 200) {
         const json = await res.json();
-        results = json.result.map(i => {
+        results = json.result.map((i, index) => {
           return {
-            title: i.username,
-            image: faker.internet.avatar(),
-            description: `${i.fname} ${i.lname}`
+            key: i.username,
+            text: i.username,
+            value: index,
+            image: faker.internet.avatar()
           };
         });
       } else if (res.status === 400) {
@@ -55,21 +65,26 @@ class MultiSelectSearch extends Component {
       results
     });
   };
-  addItem = (e, data) => {
-    const { value } = this.state;
-    this.setState({ value: value.concat(data) });
+  change = (e, { value, options }) => {
+    const data = options[value[0]].text;
+    console.log('onLabelClick: ' + data);
+    const { selectedValue } = this.state;
+    this.setState({
+      selectedValue: selectedValue.concat(data),
+      searchQuery: ''
+    });
   };
 
   render() {
-    const { isLoading, value, results } = this.state;
+    const { isLoading, selectedValue, results, searchQuery } = this.state;
     return (
       <Dropdown
         loading={isLoading}
         onSearchChange={this.handleSearchChange}
         options={results}
-        onChange={this.groupSelectOnChange}
-        onAddItem={this.addItem}
+        onChange={this.change}
         placeholder="Group"
+        searchQuery={searchQuery}
         multiple
         search
         selection
@@ -83,4 +98,4 @@ MultiSelectSearch.protoTypes = {
 export default compose(
   withCookies,
   withRouter
-)(MySearch);
+)(MultiSelectSearch);

@@ -115,7 +115,7 @@ class Gallery extends Component {
               />
             </Grid.Column>
             <Grid.Column floated="right" width={5}>
-              <GroupList />
+              <GroupList username={this.props.username} />
             </Grid.Column>
           </Grid>
         </Container>

@@ -114,4 +114,21 @@ router.delete('/delete/:id', async (req, res, next) => {
     errHandler(err, res, debug, log, next);
   }
 });
+// get all usernames in your group
+router.get('/users/:id', async (req, res, next) => {
+  const groupName = req.query.groupName;
+  try {
+    const username = await findUser(req.params.id, res);
+    const result = await conn.query(
+      `SELECT username FROM Belong 
+      WHERE groupOwner=? AND groupName=?`,
+      [username, groupName]
+    );
+    const clean = result.map(i => i.username);
+    log.info({ func: 'groups usernames get' });
+    res.status(200).json({ success: true, data: clean });
+  } catch (err) {
+    errHandler(err, res, debug, log, next);
+  }
+});
 module.exports = router;
