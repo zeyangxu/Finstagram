@@ -24,7 +24,6 @@ router.get('/following/:id', async (req, res, next) => {
     errHandler(err, res, debug, log, next);
   }
 });
-
 // @Get all usernames that following you and you accept
 router.get('/follower/:id', async (req, res, next) => {
   const id = req.params.id;
@@ -39,7 +38,6 @@ router.get('/follower/:id', async (req, res, next) => {
     errHandler(err, res, debug, log, next);
   }
 });
-
 // @get all usernames that request to follow you and not accept yet
 router.get('/request/:id', async (req, res, next) => {
   const id = req.params.id;
@@ -54,7 +52,6 @@ router.get('/request/:id', async (req, res, next) => {
     errHandler(err, res, debug, log, next);
   }
 });
-
 // check if you follow this user
 router.get('/isfollow/:id', async (req, res, next) => {
   const id = req.params.id;
@@ -134,9 +131,31 @@ router.delete('/reject/:id', async (req, res, next) => {
     const username = await findUser(id, res, next);
     const result = await conn.query(
       `DELETE FROM Follow 
-      WHERE followeeUsername=? AND followerUsername=?
+      WHERE followeeUsername=? AND followerUsername=? AND acceptedfollow=0
       `,
       [username, target]
+    );
+    if (result.affectedRows === 1) {
+      res.status(200).json({ success: true });
+    } else {
+      log.info({ result: result });
+      throw new Error('Database error');
+    }
+  } catch (err) {
+    errHandler(err, res, debug, log, next);
+  }
+});
+// Unfollow a user
+router.delete('/unfollow/:id', async (req, res, next) => {
+  const target = req.query.user;
+  const id = req.params.id;
+  try {
+    const username = await findUser(id, res, next);
+    const result = await conn.query(
+      `DELETE FROM Follow 
+      WHERE followeeUsername=? AND followerUsername=? AND acceptedFollow=1
+      `,
+      [target, username]
     );
     if (result.affectedRows === 1) {
       res.status(200).json({ success: true });

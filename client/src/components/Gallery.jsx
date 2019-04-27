@@ -13,7 +13,7 @@ import PropTypes from 'prop-types';
 import Navbar from './Navbar';
 import PhotoList from './PhotoList';
 import Upload from './Upload';
-import FriendList from './FriendList';
+import GroupList from './GroupList';
 
 class Gallery extends Component {
   constructor(props) {
@@ -65,6 +65,7 @@ class Gallery extends Component {
             onClick={this.openModal}
             color="violet"
             icon="add"
+            content="upload photo"
             style={{ marginBottom: '2rem' }}
           />
           <Modal dimmer="inverted" open={modalOpen} onClose={this.closeModal}>
@@ -110,10 +111,11 @@ class Gallery extends Component {
                 loading={loading}
                 startLoader={this.startLoader}
                 stopLoader={this.stopLoader}
+                username={this.props.username}
               />
             </Grid.Column>
             <Grid.Column floated="right" width={5}>
-              <FriendList />
+              <GroupList />
             </Grid.Column>
           </Grid>
         </Container>

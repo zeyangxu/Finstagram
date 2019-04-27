@@ -41,6 +41,7 @@ class Main extends Component {
                 loading={loading}
                 startLoader={this.startLoader}
                 stopLoader={this.stopLoader}
+                username={this.props.username}
               />
             </Grid.Column>
             <Grid.Column floated="right" width={5}>

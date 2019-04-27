@@ -59,22 +59,50 @@ class OtherUser extends Component {
   handleFollowClick = async () => {
     // make a follow request
     const { cookies } = this.props;
+    const { followState } = this.state;
     const sessionID = cookies.cookies.sessionID;
-    const res = await fetch(
-      `/api/follow/request/${sessionID}?user=${
-        this.props.match.params.username
-      }`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
+    if (followState === 'Follow') {
+      try {
+        const res = await fetch(
+          `/api/follow/request/${sessionID}?user=${
+            this.props.match.params.username
+          }`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          }
+        );
+        if (res.status === 200) {
+          this.checkFollow();
+        } else {
+          console.error('request follow failed');
         }
+      } catch (err) {
+        console.error(err);
       }
-    );
-    if (res.status === 200) {
-      this.checkFollow();
-    } else {
-      console.error('request follow failed');
+    } else if (followState === 'Following') {
+      try {
+        const res = await fetch(
+          `/api/follow/unfollow/${sessionID}?user=${
+            this.props.match.params.username
+          }`,
+          {
+            method: 'DELETE',
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          }
+        );
+        if (res.status === 200) {
+          this.checkFollow();
+        } else {
+          console.error('unfollow failed');
+        }
+      } catch (err) {
+        console.error(err);
+      }
     }
   };
   componentDidUpdate(prevProps, prevState) {
@@ -98,11 +126,11 @@ class OtherUser extends Component {
             <Header.Content>{this.props.match.params.username}</Header.Content>
             {followState !== 'yourself' && (
               <Button
-                disabled={followState !== 'Follow'}
-                color="blue"
+                disabled={followState === 'Requested'}
+                color={followState === 'Following' ? 'grey' : 'blue'}
                 onClick={this.handleFollowClick}
               >
-                {followState}
+                {followState === 'Following' ? 'Unfollow' : followState}
               </Button>
             )}
           </Header>

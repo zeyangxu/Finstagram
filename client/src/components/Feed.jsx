@@ -1,5 +1,7 @@
 import React from 'react';
 import { Card, Image, Icon } from 'semantic-ui-react';
+import { Link } from 'react-router-dom';
+import faker from 'faker';
 
 export default function Feed({
   img_url,
@@ -13,12 +15,14 @@ export default function Feed({
   fluid,
   showDelete,
   groupName,
-  groupOwner
+  groupOwner,
+  session_name
 }) {
   const locale_date = new Date(timestamp).toLocaleDateString();
   const locale_time = new Date(timestamp).toLocaleTimeString('en-US', {
     hour12: false
   });
+  const link = username === session_name ? '/gallery' : `/user/${username}`;
   return (
     <div style={{ marginBottom: '2rem' }}>
       <Card centered={centered} fluid={fluid}>
@@ -34,7 +38,11 @@ export default function Feed({
           />
         </div>
         <Card.Content>
-          <Card.Header>{username}</Card.Header>
+          <Card.Header as={Link} to={link} style={{ marginBottom: '1rem' }}>
+            <Image avatar src={faker.internet.avatar()} size="mini" />
+            {'   '}
+            {username}
+          </Card.Header>
 
           <Card.Meta>
             <span className="date">

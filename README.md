@@ -133,7 +133,9 @@ Response a list of username that sent follow request to you
 - [x] Not storing session-id of all request
 - [ ] Show upload error alert modal
 - [ ] Tag other user in a post
-- [ ] Post phot with a url
+- [ ] Post photo with a url
+- [ ] add a button to the right of group list that can create new group
+- [ ] implement add user into your group
 
 ### Features
 
@@ -142,7 +144,7 @@ Response a list of username that sent follow request to you
 - [x] Session
 - [x] Upload photo
 - [x] View photo and data
-- [ ] Create close friend group
+- [x] Create close friend group
 
 ## Notes
 

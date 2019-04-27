@@ -1,13 +1,13 @@
 import faker from 'faker';
 import React, { Component } from 'react';
-import { Search } from 'semantic-ui-react';
+import { Search, Dropdown } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 import { withCookies, Cookies } from 'react-cookie';
 import { withRouter } from 'react-router-dom';
 import { compose } from 'recompose';
 
-class MySearch extends Component {
-  state = { source: null };
+class MultiSelectSearch extends Component {
+  state = { source: null, value: [] };
 
   async componentDidMount() {}
 
@@ -18,13 +18,13 @@ class MySearch extends Component {
   resetComponent = () =>
     this.setState({ isLoading: false, results: [], value: '' });
 
-  handleResultSelect = (e, { result }) => {
-    if (this.props.mode === 'invite') {
-      this.setState({ value: result.title });
-    } else {
-      this.props.history.push(`/user/${result.title}`);
-    }
-  };
+  // handleResultSelect = (e, { result }) => {
+  //   if (this.props.mode === 'invite') {
+  //     this.setState({ value: result.title });
+  //   } else {
+  //     this.props.history.push(`/user/${result.title}`);
+  //   }
+  // };
 
   handleSearchChange = async (e, { value }) => {
     await this.setState({ isLoading: true, value });
@@ -55,21 +55,29 @@ class MySearch extends Component {
       results
     });
   };
+  addItem = (e, data) => {
+    const { value } = this.state;
+    this.setState({ value: value.concat(data) });
+  };
 
   render() {
     const { isLoading, value, results } = this.state;
     return (
-      <Search
+      <Dropdown
         loading={isLoading}
-        onResultSelect={this.handleResultSelect}
         onSearchChange={this.handleSearchChange}
-        results={results}
-        value={value}
+        options={results}
+        onChange={this.groupSelectOnChange}
+        onAddItem={this.addItem}
+        placeholder="Group"
+        multiple
+        search
+        selection
       />
     );
   }
 }
-MySearch.protoTypes = {
+MultiSelectSearch.protoTypes = {
   cookies: PropTypes.instanceOf(Cookies)
 };
 export default compose(

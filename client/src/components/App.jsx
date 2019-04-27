@@ -8,6 +8,7 @@ import Main from './Main';
 import Gallery from './Gallery';
 import Signup from './Signup';
 import OtherUser from './OtherUser';
+import ScrollToTop from './ScrollToTop';
 
 class App extends Component {
   constructor(props) {
@@ -69,43 +70,45 @@ class App extends Component {
     return (
       <>
         <Switch>
-          <Route
-            path="/login"
-            render={props => (
-              <Login {...props} AppAuth={this.authWithSession} />
-            )}
-          />
-          <Route
-            path="/signup"
-            render={props => (
-              <Signup {...props} AppAuth={this.authWithSession} />
-            )}
-          />
-          <Route
-            path="/"
-            exact
-            render={props =>
-              isAuth ? (
-                <Main {...props} username={username} />
-              ) : (
-                <Redirect to="/login" />
-              )
-            }
-          />
-          <Route
-            path="/gallery"
-            render={props =>
-              isAuth ? (
-                <Gallery {...props} username={username} />
-              ) : (
-                <Redirect to="/login" />
-              )
-            }
-          />
-          <Route
-            path="/user/:username"
-            render={props => <OtherUser {...props} username={username} />}
-          />
+          <ScrollToTop>
+            <Route
+              path="/login"
+              render={props => (
+                <Login {...props} AppAuth={this.authWithSession} />
+              )}
+            />
+            <Route
+              path="/signup"
+              render={props => (
+                <Signup {...props} AppAuth={this.authWithSession} />
+              )}
+            />
+            <Route
+              path="/"
+              exact
+              render={props =>
+                isAuth ? (
+                  <Main {...props} username={username} />
+                ) : (
+                  <Redirect to="/login" />
+                )
+              }
+            />
+            <Route
+              path="/gallery"
+              render={props =>
+                isAuth ? (
+                  <Gallery {...props} username={username} />
+                ) : (
+                  <Redirect to="/login" />
+                )
+              }
+            />
+            <Route
+              path="/user/:username"
+              render={props => <OtherUser {...props} username={username} />}
+            />
+          </ScrollToTop>
         </Switch>
       </>
     );

@@ -16,14 +16,20 @@ router.get('/:id', async (req, res, next) => {
     // validate the session
     const username = await findUser(req.params.id, res, next);
     const result = await conn.query(
-      `SELECT * FROM Photo 
-      WHERE allFollowers=1 
-      AND photoOwner IN
+      `SELECT p.photoID, p.photoOwner, p.timestamp, p.filePath, p.caption, p.allFollowers, s.groupName, s.groupOwner
+      FROM Photo p LEFT OUTER JOIN Share s ON (p.photoID=s.photoID)
+      WHERE p.allFollowers=1 
+      AND p.photoOwner IN
       (SELECT followeeUsername FROM Follow 
         WHERE followerUsername=? AND acceptedfollow=1) 
-        OR photoID IN 
-      (SELECT photoID FROM Photo WHERE photoOwner=? AND allFollowers=1)`,
-      [username, username]
+        OR p.photoID IN 
+      (SELECT photoID FROM Photo WHERE photoOwner=?)
+      OR p.photoID IN
+      (SELECT photoID FROM Share NATURAL JOIN Belong b
+       WHERE b.username=?)
+       OR p.photoID IN
+       (SELECT photoID FROM Share s WHERE s.groupOwner=?)`,
+      [username, username, username, username]
     );
 
     const pathList = result
@@ -34,7 +40,8 @@ router.get('/:id', async (req, res, next) => {
           photoID: i.photoID,
           timestamp: i.timestamp,
           caption: i.caption,
-          isPublic: i.allFollowers
+          isPublic: i.allFollowers,
+          groupName: i.groupName
         };
       })
       .reverse();

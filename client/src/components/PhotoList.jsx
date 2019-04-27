@@ -69,7 +69,7 @@ class PhotoList extends Component {
   onDeleteBtnClick = async id => {
     const sessionID = this.getSession();
     this.props.startLoader();
-    const res = await fetch(`/api/gallery?photo=${id}&session=${sessionID}`, {
+    const res = await fetch(`/api/gallery/${sessionID}?photo=${id}`, {
       method: 'DELETE',
       headers: { ContentType: 'application/json' }
     });
@@ -91,6 +91,7 @@ class PhotoList extends Component {
           <FeedList
             photoList={photoList}
             onDeleteBtnClick={this.onDeleteBtnClick}
+            username={this.props.username}
           />
         );
       case 'gallery':

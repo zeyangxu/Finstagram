@@ -1,9 +1,9 @@
 import React from 'react';
 import Feed from './Feed';
 
-export default function FeedList({ photoList, onDeleteBtnClick }) {
+export default function FeedList({ photoList, onDeleteBtnClick, username }) {
   return (
-    <div>
+    <>
       {photoList &&
         photoList.map(i => (
           <Feed
@@ -14,8 +14,9 @@ export default function FeedList({ photoList, onDeleteBtnClick }) {
             showDelete={false}
             centered={true}
             fluid={true}
+            session_name={username}
           />
         ))}
-    </div>
+    </>
   );
 }

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import {
+  Modal,
   Menu,
   Responsive,
   Button,
@@ -12,7 +13,8 @@ import {
   Icon,
   Form,
   Label,
-  Item
+  Item,
+  Message
 } from 'semantic-ui-react';
 import { NavLink, withRouter } from 'react-router-dom';
 import { withCookies, Cookies } from 'react-cookie';
@@ -29,7 +31,11 @@ class Navbar extends Component {
     search_input: '',
     activeItem: 'main',
     requestList: [],
-    requestNum: null
+    requestNum: null,
+    modalOpen: false,
+    newGroupName: '',
+    showWarningMsg: false,
+    errMsgList: []
   };
   getData = async () => {
     const { cookies } = this.props;
@@ -140,7 +146,6 @@ class Navbar extends Component {
       console.error(err);
     }
   };
-
   render() {
     const {
       activeItem,
@@ -186,7 +191,7 @@ class Navbar extends Component {
 
               <Responsive minWidth={768} as={Menu.Item}>
                 <Form onSubmit={this.toSearchPage}>
-                  <Search />
+                  <Search mode="visit" />
                 </Form>
               </Responsive>
 
