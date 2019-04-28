@@ -2,7 +2,11 @@ import React from 'react';
 import { Grid } from 'semantic-ui-react';
 import Collection from './Collection';
 
-export default function CollectionList({ photoList, onDeleteBtnClick }) {
+export default function CollectionList({
+  photoList,
+  onDeleteBtnClick,
+  rerender
+}) {
   return (
     <div>
       <Grid>
@@ -18,6 +22,7 @@ export default function CollectionList({ photoList, onDeleteBtnClick }) {
                   showDelete={true}
                   centered={false}
                   fluid={false}
+                  rerender={rerender}
                 />
               </Grid.Column>
             ))}

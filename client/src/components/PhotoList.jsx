@@ -99,6 +99,7 @@ class PhotoList extends Component {
           <CollectionList
             photoList={photoList}
             onDeleteBtnClick={this.onDeleteBtnClick}
+            rerender={this.fetchPhoto}
           />
         );
       case 'otheruser':

@@ -241,6 +241,7 @@ class GroupList extends Component {
               <MultiSearch
                 selectedGroupName={selectedGroupName}
                 getGroupUsers={this.getGroupUsers}
+                mode="invite"
               />
             </Modal.Description>
           </Modal.Content>

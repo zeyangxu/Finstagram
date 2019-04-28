@@ -73,6 +73,30 @@ class MultiSelectSearch extends Component {
       this.props.history.push('/');
     }
   };
+  tagUsers = async () => {
+    const { photoID, cookies, isPublic } = this.props;
+    const { selectedValue } = this.state;
+    const sessionID = cookies.cookies.sessionID;
+    try {
+      const res = await fetch(`/api/tag/add/${sessionID}`, {
+        method: 'POST',
+        mode: 'cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          photoID,
+          users: selectedValue,
+          isPublic
+        })
+      });
+
+      if (res.status === 200) {
+        this.props.rerender();
+      }
+    } catch (err) {
+      console.error(err);
+      this.props.history.push('/');
+    }
+  };
   render() {
     const { isLoading, results } = this.state;
     return (
@@ -80,7 +104,7 @@ class MultiSelectSearch extends Component {
         <Dropdown
           loading={isLoading}
           options={results}
-          placeholder="Group"
+          placeholder="Search users..."
           onChange={this.multiSelectOnChange}
           minCharacters={3}
           clearable
@@ -88,9 +112,20 @@ class MultiSelectSearch extends Component {
           search
           selection
         />
-        <Button primary style={{ marginTop: '2rem' }} onClick={this.addUsers}>
-          Invite
-        </Button>
+        {this.props.mode === 'invite' && (
+          <Button
+            primary
+            style={{ margin: '2rem 0 0 1rem' }}
+            onClick={this.addUsers}
+          >
+            Invite
+          </Button>
+        )}
+        {this.props.mode === 'tag' && (
+          <Button primary style={{ marginTop: '1rem' }} onClick={this.tagUsers}>
+            Request Tag
+          </Button>
+        )}
       </>
     );
   }

@@ -25,19 +25,29 @@ router.get('/receive/:id', async (req, res, next) => {
     errHandler(err, res, debug, log, next);
   }
 });
+router.get('/photo/', async (req, res, next) => {
+  const photoID = req.query.photoID;
+  try {
+    const result = await conn.query(
+      `SELECT username, fname, lname, acceptedTag FROM Tag NATURAL JOIN Person WHERE photoID=?`,
+      [photoID]
+    );
+    res.status(200).json({ success: true, data: result });
+  } catch (err) {
+    errHandler(err, res, debug, log, next);
+  }
+});
 // tag multiple users in a photo
 router.post('/add/:id', async (req, res, next) => {
-  const targets = req.body.users;
-  const photoID = req.body.photoID;
-  const isPublic = req.body.isPublic;
+  const { users, photoID, isPublic } = req.body;
   const id = req.params.id;
   try {
     const username = await findUser(id, res, next);
     // if the photo is not public check-visibility
     if (!isPublic) {
-      await checkVisibility(targets, photoID);
+      await checkVisibility(users, photoID);
     }
-    const nested = targets.map(i => [i, photoID, i === username ? 1 : 0]);
+    const nested = users.map(i => [i, photoID, i === username ? 1 : 0]);
     const result = await conn.query(
       `INSERT INTO Tag (username, photoID, acceptedTag) VALUES ?`,
       [nested]
