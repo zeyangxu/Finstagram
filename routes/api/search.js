@@ -28,15 +28,14 @@ router.get('/user/', async (req, res, next) => {
 });
 
 // @get all user result
-router.get('/all', async (req, res, next) => {
+router.get('/user/all', async (req, res, next) => {
   const keyword = req.query.keyword;
   try {
     const result = await conn.query(
       `SELECT
     username, fname, lname
     FROM 
-    Person  
-    WHERE username LIKE '%${keyword}%'`
+    Person`
     );
     res.status(200).json({ success: true, result });
   } catch (err) {

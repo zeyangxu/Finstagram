@@ -87,7 +87,7 @@ router.get('/isfollow/:id', async (req, res, next) => {
 });
 // make a follow request
 router.post('/request/:id', async (req, res, next) => {
-  const target = req.query.user;
+  const target = req.body.username;
   const id = req.params.id;
   try {
     const username = await findUser(id, res, next);
@@ -96,7 +96,11 @@ router.post('/request/:id', async (req, res, next) => {
       `,
       [username, target, 0]
     );
-    res.status(200).json({ success: true });
+    if (result.affectedRows === 1) {
+      res.status(200).json({ success: true });
+    } else {
+      throw Error('database error');
+    }
   } catch (err) {
     errHandler(err, res, debug, log, next);
   }

@@ -76,6 +76,23 @@ router.post('/add/:id', async (req, res, next) => {
     errHandler(err, res, debug, log, next);
   }
 });
+// add multiple users to your group
+router.post('/add/list/:id', async (req, res, next) => {
+  const { users, groupName } = req.body;
+  const id = req.params.id;
+  try {
+    const ownerName = await findUser(id, res, next);
+    const nested = users.map(i => [groupName, ownerName, i]);
+    const result = await conn.query(
+      `INSERT INTO Belong (groupName, groupOwner, username)
+      VALUES ?`,
+      [nested]
+    );
+    res.status(200).json({ success: true });
+  } catch (err) {
+    errHandler(err, res, debug, log, next);
+  }
+});
 // create a new group
 router.post('/create/:id', async (req, res, next) => {
   const { groupName } = req.body;

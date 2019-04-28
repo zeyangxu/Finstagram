@@ -38,6 +38,7 @@ router.delete('/:id', async (req, res, next) => {
 // get
 router.get('/:id', async (req, res, next) => {
   const id = req.params.id;
+  log.info({ route: '@get', id });
   try {
     const username = await findUser(id, res, next);
     res.status(201).json({ success: true, username: username });
@@ -53,6 +54,7 @@ router.get('/:id', async (req, res, next) => {
 router.post('/', async (req, res, next) => {
   const { username, password } = req.body;
   log.info({
+    route: 'auth post',
     username: username,
     password: password,
     sessionID: req.sessionID

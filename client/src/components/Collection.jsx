@@ -1,5 +1,6 @@
 import React from 'react';
-import { Dropdown, Card, Image, Icon } from 'semantic-ui-react';
+import { Label, Dropdown, Card, Image, Icon } from 'semantic-ui-react';
+import faker from 'faker';
 
 export default function Photo({
   img_url,
@@ -42,6 +43,10 @@ export default function Photo({
             </span>
           </Card.Meta>
           <Card.Description>{caption}</Card.Description>
+          <Label basic image>
+            <img src={faker.internet.avatar()} />
+            Joe
+          </Label>
         </Card.Content>
         <Card.Content extra>
           {isPublic ? (

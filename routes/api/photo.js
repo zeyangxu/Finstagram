@@ -10,11 +10,11 @@ const log = bunyan.createLogger({ name: 'photo' });
 
 // get your main page photo
 router.get('/:id', async (req, res, next) => {
-  const sessionID = req.params.id;
-
+  const id = req.params.id;
   try {
+    log.info({ route: '@get/:id', id });
     // validate the session
-    const username = await findUser(req.params.id, res, next);
+    const username = await findUser(id, res, next);
     const result = await conn.query(
       `SELECT p.photoID, p.photoOwner, p.timestamp, p.filePath, p.caption, p.allFollowers, s.groupName, s.groupOwner
       FROM Photo p LEFT OUTER JOIN Share s ON (p.photoID=s.photoID)
@@ -45,7 +45,6 @@ router.get('/:id', async (req, res, next) => {
         };
       })
       .reverse();
-    log.info({ func: 'photo get' });
     res.status(200).json({ success: true, data: pathList });
   } catch (err) {
     errHandler(err, res, debug, log, next);
@@ -55,6 +54,7 @@ router.get('/:id', async (req, res, next) => {
 // get other user's gallery photo
 router.get('/user/:username', async (req, res, next) => {
   const username = req.params.username;
+  log.info({ router: '@get /user/:username' });
   try {
     // validate the session
     const result = await conn.query(

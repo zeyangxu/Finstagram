@@ -1,6 +1,6 @@
 import faker from 'faker';
 import React, { Component } from 'react';
-import { Search, Dropdown } from 'semantic-ui-react';
+import { Button, Search, Dropdown } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 import { withCookies, Cookies } from 'react-cookie';
 import { withRouter } from 'react-router-dom';
@@ -8,13 +8,31 @@ import { compose } from 'recompose';
 
 class MultiSelectSearch extends Component {
   state = {
-    source: null,
     results: [],
-    searchQuery: '',
-    selectedValue: ['leo']
+    selectedValue: []
   };
 
-  async componentDidMount() {}
+  async componentDidMount() {
+    try {
+      const res = await fetch('/api/search/user/all');
+      const json = await res.json();
+      if (res.status === 200) {
+        const clean = json.result.map((i, index) => {
+          return {
+            key: i.username,
+            text: i.username,
+            value: index,
+            image: faker.internet.avatar()
+          };
+        });
+        this.setState({ results: clean });
+      } else {
+        throw new Error('server error');
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  }
 
   componentWillMount() {
     this.resetComponent();
@@ -27,68 +45,53 @@ class MultiSelectSearch extends Component {
       searchQuery: ''
     });
 
-  // handleResultSelect = (e, { result }) => {
-  //   if (this.props.mode === 'invite') {
-  //     this.setState({ value: result.title });
-  //   } else {
-  //     this.props.history.push(`/user/${result.title}`);
-  //   }
-  // };
-
-  handleSearchChange = async (e, { searchQuery }) => {
-    await this.setState({ isLoading: true, searchQuery });
-    const input = searchQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    let results = [];
+  multiSelectOnChange = (e, { value }) => {
+    const { results } = this.state;
+    const users = value.map(i => results[i].text);
+    this.setState({ selectedValue: users });
+  };
+  addUsers = async () => {
+    const { selectedGroupName, cookies } = this.props;
+    const { selectedValue } = this.state;
+    const sessionID = cookies.cookies.sessionID;
     try {
-      const res = await fetch(`/api/search/all?keyword=${input}`);
+      const res = await fetch(`/api/groups/add/list/${sessionID}`, {
+        method: 'POST',
+        mode: 'cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          groupName: selectedGroupName,
+          users: selectedValue
+        })
+      });
+
       if (res.status === 200) {
-        const json = await res.json();
-        results = json.result.map((i, index) => {
-          return {
-            key: i.username,
-            text: i.username,
-            value: index,
-            image: faker.internet.avatar()
-          };
-        });
-      } else if (res.status === 400) {
-        this.props.history.push('/login');
+        this.props.getGroupUsers(selectedGroupName, true);
       }
     } catch (err) {
       console.error(err);
+      this.props.history.push('/');
     }
-
-    if (input.length < 1) return this.resetComponent();
-
-    this.setState({
-      isLoading: false,
-      results
-    });
   };
-  change = (e, { value, options }) => {
-    const data = options[value[0]].text;
-    console.log('onLabelClick: ' + data);
-    const { selectedValue } = this.state;
-    this.setState({
-      selectedValue: selectedValue.concat(data),
-      searchQuery: ''
-    });
-  };
-
   render() {
-    const { isLoading, selectedValue, results, searchQuery } = this.state;
+    const { isLoading, results } = this.state;
     return (
-      <Dropdown
-        loading={isLoading}
-        onSearchChange={this.handleSearchChange}
-        options={results}
-        onChange={this.change}
-        placeholder="Group"
-        searchQuery={searchQuery}
-        multiple
-        search
-        selection
-      />
+      <>
+        <Dropdown
+          loading={isLoading}
+          options={results}
+          placeholder="Group"
+          onChange={this.multiSelectOnChange}
+          minCharacters={3}
+          clearable
+          multiple
+          search
+          selection
+        />
+        <Button primary style={{ marginTop: '2rem' }} onClick={this.addUsers}>
+          Invite
+        </Button>
+      </>
     );
   }
 }

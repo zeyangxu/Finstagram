@@ -52,7 +52,8 @@ const auth = require('./routes/api/auth'),
   photo = require('./routes/api/photo'),
   groups = require('./routes/api/groups'),
   follow = require('./routes/api/follow'),
-  search = require('./routes/api/search');
+  search = require('./routes/api/search'),
+  tag = require('./routes/api/tag');
 
 app.use('/api/auth', auth);
 app.use('/api/register', register);
@@ -62,6 +63,7 @@ app.use('/api/photo', photo);
 app.use('/api/groups', groups);
 app.use('/api/follow', follow);
 app.use('/api/search', search);
+app.use('/api/tag', tag);
 
 app.use(express.static('public'));
 // start the server

@@ -63,17 +63,13 @@ class OtherUser extends Component {
     const sessionID = cookies.cookies.sessionID;
     if (followState === 'Follow') {
       try {
-        const res = await fetch(
-          `/api/follow/request/${sessionID}?user=${
-            this.props.match.params.username
-          }`,
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            }
+        const res = await fetch(`/api/follow/request/${sessionID}`, {
+          method: 'POST',
+          body: JSON.stringify({ username: this.props.match.params.username }),
+          headers: {
+            'Content-Type': 'application/json'
           }
-        );
+        });
         if (res.status === 200) {
           this.checkFollow();
         } else {

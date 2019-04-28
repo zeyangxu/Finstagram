@@ -2,8 +2,10 @@ import React, { Component } from 'react';
 import faker from 'faker';
 import {
   Modal,
+  Grid,
   Icon,
   Message,
+  Label,
   Form,
   Header,
   List,
@@ -54,7 +56,7 @@ class NestedModal extends Component {
         onClose={this.close}
         size="small"
         trigger={
-          <Button icon>
+          <Button icon style={{ marginLeft: '3rem' }} color="red">
             Remove Group <Icon name="right chevron" />
           </Button>
         }
@@ -101,6 +103,7 @@ class GroupList extends Component {
         modalOpen: false
       });
     } catch (err) {
+      console.error(err);
       this.props.history.push('/');
     }
   };
@@ -109,7 +112,7 @@ class GroupList extends Component {
   }
   openItemModal = async (e, { name }) => {
     console.log('target: ' + name);
-    const list = await this.getGroupUsers(name);
+    const list = await this.getGroupUsers(name, false);
     this.setState({
       modalOpen: true,
       selectedGroupName: name,
@@ -157,7 +160,7 @@ class GroupList extends Component {
       console.error(err);
     }
   };
-  getGroupUsers = async groupName => {
+  getGroupUsers = async (groupName, shouldChangeState) => {
     const { cookies } = this.props;
     const sessionID = cookies.cookies.sessionID;
     try {
@@ -166,41 +169,17 @@ class GroupList extends Component {
       );
       const json = await res.json();
       if (res.status === 200) {
-        console.log('getGroupUsers: ' + json.data);
-        return json.data;
+        if (shouldChangeState) {
+          this.setState({ groupMemberList: json.data });
+        } else {
+          return json.data;
+        }
       }
     } catch (err) {
+      console.error(err);
       this.props.history.push('/');
     }
   };
-  addUser = async username => {
-    const { cookies } = this.props;
-    const { selectedGroupName } = this.state;
-    const sessionID = cookies.cookies.sessionID;
-    try {
-      if (username === this.props.username) {
-        alert("you can't add yourself to a group you own");
-        return;
-      }
-      const res = await fetch(`/api/groups/add/${sessionID}`, {
-        method: 'POST',
-        mode: 'cors',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          groupName: selectedGroupName,
-          inviteUserName: username
-        })
-      });
-
-      if (res.status === 200) {
-        const list = await this.getGroupUsers(selectedGroupName);
-        this.setState({ groupMemberList: list });
-      }
-    } catch (err) {
-      this.props.history.push('/');
-    }
-  };
-
   render() {
     const {
       groupList,
@@ -239,24 +218,41 @@ class GroupList extends Component {
           </Modal.Content>
         </Modal>
         <Modal dimmer="inverted" open={modalOpen} onClose={this.closeItemModal}>
-          <Modal.Header>Invite a user</Modal.Header>
-          <Modal.Content image>
+          <Modal.Header>
+            Invite a user
+            <NestedModal
+              groupName={selectedGroupName}
+              getData={this.getData}
+              cookies={this.props.cookies}
+            />
+          </Modal.Header>
+          <Modal.Content>
             <Modal.Description>
-              <ul>
+              <div style={{ display: 'flex', flexWrap: 'wrap' }}>
                 {groupMemberList.map(i => {
-                  return <li key={i}>{i}</li>;
+                  return (
+                    <Label size="huge" key={i} style={{ marginBottom: '1rem' }}>
+                      <Image avatar src={faker.internet.avatar()} alt="" />
+                      {i}
+                    </Label>
+                  );
                 })}
-              </ul>
-              <Search mode="invite" addUser={this.addUser} />
-            </Modal.Description>
-            <Modal.Actions>
-              <NestedModal
-                groupName={selectedGroupName}
-                getData={this.getData}
-                cookies={this.props.cookies}
+              </div>
+              <MultiSearch
+                selectedGroupName={selectedGroupName}
+                getGroupUsers={this.getGroupUsers}
               />
-            </Modal.Actions>
+            </Modal.Description>
           </Modal.Content>
+          <Modal.Actions>
+            <Button
+              floated="right"
+              content="Done"
+              icon="close"
+              style={{ marginBottom: '1rem' }}
+              onClick={this.closeItemModal}
+            />
+          </Modal.Actions>
         </Modal>
         <Segment>
           <List divided verticalAlign="middle">
