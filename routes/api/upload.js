@@ -122,7 +122,7 @@ router.post('/photo_url', (req, res, next) => {
     }
   });
 });
-
+// helper function for saving file locally
 const download = (uri, filename, callback) => {
   request.head(uri, function(err, res, body) {
     console.log('content-type:', res.headers['content-type']);

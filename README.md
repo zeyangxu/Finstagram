@@ -21,6 +21,10 @@ This app use session based authentication
 
 ![](https://cdn-images-1.medium.com/max/1600/1*Hg1gUTXN5E3Nrku0jWCRow.png)
 
+## Frontend Components Structure
+
+![](./static/components_struct.png)
+
 ## Backend api endpoint
 
 ### Auth
@@ -136,6 +140,7 @@ Response a list of username that sent follow request to you
 - [ ] Post photo with a url
 - [x] add a button to the right of group list that can create new group
 - [x] implement add user into your group
+- [ ] custom alert component
 
 ### Features
 
