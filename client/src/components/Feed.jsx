@@ -10,7 +10,7 @@ export default class Feed extends Component {
       const res = await fetch(`/api/tag/photo?photoID=${this.props.photoID}`);
       const json = await res.json();
       if (res.status === 200) {
-        this.setState({ taggedUsers: json.data.map(i => i.username) });
+        this.setState({ taggedUsers: json.data });
       }
     } catch (err) {
       console.error(err);
@@ -77,15 +77,20 @@ export default class Feed extends Component {
               </span>
             </Card.Content>
           )}
-          {isPublic === 0 && (
+          {taggedUsers.length > 0 && (
             <Card.Content extra>
               <label>Tagged Users</label>
               <div style={{ display: 'flex', flexWrap: 'wrap' }}>
                 {taggedUsers.map(i => {
                   return (
-                    <Label basic image key={i}>
+                    <Label
+                      basic
+                      image
+                      key={i.username}
+                      color={i.acceptedTag === 1 ? 'green' : 'red'}
+                    >
                       <img src={faker.internet.avatar()} alt="" />
-                      {i}
+                      {i.username}
                     </Label>
                   );
                 })}

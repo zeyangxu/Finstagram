@@ -30,9 +30,13 @@ class Upload extends Component {
         return result.concat(i.data);
       }, []);
       console.log('upload fetch group name data', result);
-      this.setState({ groupList: result });
+      if (res[0].status === 200 && res[1].status === 200) {
+        this.setState({ groupList: result });
+      } else if (res[0].status === 401 || res[0] === 401) {
+        this.props.history.push('/');
+      }
     } catch (err) {
-      this.props.history.push('/');
+      console.error(err);
     }
   }
   // handle photo submit

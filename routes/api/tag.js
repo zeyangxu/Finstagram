@@ -17,10 +17,17 @@ router.get('/receive/:id', async (req, res, next) => {
   try {
     const username = await findUser(id, res, next);
     const result = await conn.query(
-      `SELECT photoID FROM Tag WHERE username=? AND acceptedTag=0`,
+      `SELECT username, filePath, photoID FROM Tag NATURAL JOIN Photo WHERE username=? AND acceptedTag=0`,
       username
     );
-    res.status(200).json({ success: true, result: result });
+    const clean = result.map(i => {
+      return {
+        username: i.username,
+        photoID: i.photoID,
+        filePath: i.filePath.replace(/public/, '')
+      };
+    });
+    res.status(200).json({ success: true, result: clean });
   } catch (err) {
     errHandler(err, res, debug, log, next);
   }
@@ -37,6 +44,7 @@ router.get('/photo/', async (req, res, next) => {
     errHandler(err, res, debug, log, next);
   }
 });
+// TODO handle duplicate tag
 // tag multiple users in a photo
 router.post('/add/:id', async (req, res, next) => {
   const { users, photoID, isPublic } = req.body;
@@ -57,45 +65,46 @@ router.post('/add/:id', async (req, res, next) => {
     errHandler(err, res, debug, log, next);
   }
 });
-// TODO accept a tag request
+// accept a tag request
 router.post('/accept/:id', async (req, res, next) => {
-  const target = req.query.user;
+  const { photoID } = req.body;
   const id = req.params.id;
   try {
     const username = await findUser(id, res, next);
     const result = await conn.query(
-      `UPDATE Follow
-      SET acceptedfollow=1
-      WHERE followeeUsername=? AND followerUsername=?
+      `UPDATE Tag
+      SET acceptedTag=1
+      WHERE photoID=? AND username=?
       `,
-      [username, target]
+      [photoID, username]
     );
     if (result.affectedRows === 1) {
       res.status(200).json({ success: true });
     } else {
+      log.info({ result: result });
       throw new Error('Does not find row');
     }
   } catch (err) {
     errHandler(err, res, debug, log, next);
   }
 });
-// TODO delete a tag request
+// delete a tag request
 router.delete('/reject/:id', async (req, res, next) => {
-  const target = req.query.user;
+  const { photoID } = req.body;
   const id = req.params.id;
   try {
     const username = await findUser(id, res, next);
     const result = await conn.query(
-      `DELETE FROM Follow 
-      WHERE followeeUsername=? AND followerUsername=? AND acceptedfollow=0
+      `DELETE FROM Tag 
+      WHERE username=? AND photoID=? AND acceptedTag=0
       `,
-      [username, target]
+      [username, photoID]
     );
     if (result.affectedRows === 1) {
       res.status(200).json({ success: true });
     } else {
       log.info({ result: result });
-      throw new Error('Database error');
+      throw new Error('does not find row');
     }
   } catch (err) {
     errHandler(err, res, debug, log, next);

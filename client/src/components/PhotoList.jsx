@@ -45,7 +45,7 @@ class PhotoList extends Component {
         this.setState({ photoList: json.data });
       } else {
         console.log('status', res.status);
-        if (res.status === 400) {
+        if (res.status === 401) {
           this.props.history.push('/login');
         }
         console.log('fetch photo fail', json.error);

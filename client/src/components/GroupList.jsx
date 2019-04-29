@@ -39,7 +39,7 @@ class NestedModal extends Component {
       if (res.status === 200) {
         this.close();
         this.props.getData();
-      } else if (res.status === 400) {
+      } else if (res.status === 401) {
         this.props.history.push('/login');
       }
     } catch (err) {
@@ -64,7 +64,8 @@ class NestedModal extends Component {
         <Modal.Header>Modal #2</Modal.Header>
         <Modal.Content>
           <p>
-            Are you sure you want to delete <span>{this.props.groupName}</span>
+            Are you sure you want to delete{' '}
+            <strong>{this.props.groupName}</strong>
           </p>
         </Modal.Content>
         <Modal.Actions>
@@ -96,15 +97,17 @@ class GroupList extends Component {
     try {
       const res = await fetch(`/api/groups/own/${sessionID}`);
       const json = await res.json();
-
-      this.setState({
-        groupList: json.data,
-        newModalOpen: false,
-        modalOpen: false
-      });
+      if (res.status === 200) {
+        this.setState({
+          groupList: json.data,
+          newModalOpen: false,
+          modalOpen: false
+        });
+      } else if (res.status === 401) {
+        this.props.history.push('/');
+      }
     } catch (err) {
       console.error(err);
-      this.props.history.push('/');
     }
   };
   componentDidMount() {
@@ -153,7 +156,7 @@ class GroupList extends Component {
       if (res.status === 200) {
         this.setState({ newGroupName: '' });
         this.getData();
-      } else if (res.status === 400) {
+      } else if (res.status === 401) {
         this.props.history.push('/login');
       }
     } catch (err) {
@@ -174,10 +177,11 @@ class GroupList extends Component {
         } else {
           return json.data;
         }
+      } else if (res.status === 401) {
+        this.props.history.push('/');
       }
     } catch (err) {
       console.error(err);
-      this.props.history.push('/');
     }
   };
   render() {

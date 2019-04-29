@@ -42,7 +42,7 @@ class MySearch extends Component {
             description: `${i.fname} ${i.lname}`
           };
         });
-      } else if (res.status === 400) {
+      } else if (res.status === 401) {
         this.props.history.push('/login');
       }
     } catch (err) {

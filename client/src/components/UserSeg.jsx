@@ -23,7 +23,7 @@ class UserSeg extends Component {
       });
       if (result.status === 200) {
         this.setState({ userList: list });
-      } else if (result.status === 400) {
+      } else if (result.status === 401) {
         this.props.history.push('/login');
       }
     } catch (err) {

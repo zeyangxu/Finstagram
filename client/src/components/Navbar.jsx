@@ -35,21 +35,28 @@ class Navbar extends Component {
     modalOpen: false,
     newGroupName: '',
     showWarningMsg: false,
-    errMsgList: []
+    errMsgList: [],
+    tagList: []
   };
   getData = async () => {
     const { cookies } = this.props;
     const sessionID = cookies.cookies.sessionID;
     try {
-      const res = await fetch(`/api/follow/request/${sessionID}`);
-      const json = await res.json();
-      if (res.status === 200) {
+      const p1 = fetch(`/api/follow/request/${sessionID}`);
+      const p2 = fetch(`/api/tag/receive/${sessionID}`);
+      const res = await Promise.all([p1, p2]);
+      const j1 = res[0].json();
+      const j2 = res[1].json();
+      const json = await Promise.all([j1, j2]);
+      console.log(json[0], json[1]);
+      if (res[0].status === 200 && res[1].status === 200) {
         this.setState({
-          requestNum: json.result.length,
-          requestList: json.result
+          requestNum: json[0].result.length + json[1].result.length,
+          requestList: json[0].result,
+          tagList: json[1].result
         });
-      } else if (res.status === 400) {
-        this.props.history.push('/login');
+      } else if (res[0].status === 401 || res[1].status === 401) {
+        this.props.history.push('/');
       }
     } catch (err) {
       console.error(err);
@@ -103,12 +110,12 @@ class Navbar extends Component {
       mode: 'cors'
     });
     console.log('log out');
-    if (res.status === 400) {
+    if (res.status === 401) {
       console.log('session not found');
     }
     this.props.history.push('/login');
   };
-  reject = async user => {
+  rejectFollow = async user => {
     const { cookies } = this.props;
     const sessionID = cookies.cookies.sessionID;
     try {
@@ -127,7 +134,7 @@ class Navbar extends Component {
       console.error(err);
     }
   };
-  accept = async user => {
+  acceptFollow = async user => {
     const { cookies } = this.props;
     const sessionID = cookies.cookies.sessionID;
     try {
@@ -146,6 +153,46 @@ class Navbar extends Component {
       console.error(err);
     }
   };
+  acceptTag = async photoID => {
+    const { cookies } = this.props;
+    const sessionID = cookies.cookies.sessionID;
+    try {
+      const res = await fetch(`/api/tag/accept/${sessionID}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ photoID })
+      });
+      if (res.status === 200) {
+        this.getData();
+      } else {
+        alert('soemthing wrong');
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+  rejectTag = async photoID => {
+    const { cookies } = this.props;
+    const sessionID = cookies.cookies.sessionID;
+    try {
+      const res = await fetch(`/api/tag/reject/${sessionID}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ photoID })
+      });
+      if (res.status === 200) {
+        this.getData();
+      } else {
+        alert('soemthing wrong');
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
   render() {
     const {
       activeItem,
@@ -153,7 +200,8 @@ class Navbar extends Component {
       searchInputVisible,
       search_input,
       requestList,
-      requestNum
+      requestNum,
+      tagList
     } = this.state;
     return (
       <div>
@@ -199,7 +247,7 @@ class Navbar extends Component {
                 <Dropdown
                   trigger={
                     <>
-                      <Icon name="add user" />
+                      <Icon name="mail" />
                       {requestNum !== 0 && (
                         <Label color="red" floating>
                           {requestNum}
@@ -217,16 +265,21 @@ class Navbar extends Component {
                       {requestList.map(i => {
                         return (
                           <Item key={i.followerUsername}>
-                            <Item.Image
+                            <Image
+                              avatar
                               size="tiny"
                               src={faker.internet.avatar()}
                             />
                             <Item.Content verticalAlign="middle">
-                              {i.followerUsername}
+                              <strong>{i.followerUsername}</strong>
+                              {' wants to follow you'}
+                              <Item.Description>
+                                <Icon name="user plus" />
+                              </Item.Description>
                               <Item.Extra>
                                 <Button
                                   onClick={() =>
-                                    this.accept(i.followerUsername)
+                                    this.acceptFollow(i.followerUsername)
                                   }
                                   size="mini"
                                   primary
@@ -235,8 +288,39 @@ class Navbar extends Component {
                                 </Button>
                                 <Button
                                   onClick={() =>
-                                    this.reject(i.followerUsername)
+                                    this.rejectFollow(i.followerUsername)
                                   }
+                                  size="mini"
+                                >
+                                  Remove
+                                </Button>
+                              </Item.Extra>
+                            </Item.Content>
+                          </Item>
+                        );
+                      })}
+                      {tagList.map(i => {
+                        return (
+                          <Item key={i.filePath}>
+                            <Item.Image
+                              size="tiny"
+                              src={'http://localhost:5000' + i.filePath}
+                            />
+                            <Item.Content verticalAlign="middle">
+                              {'someone tags you in a photo'}
+                              <Item.Description>
+                                <Icon name="at" />
+                              </Item.Description>
+                              <Item.Extra>
+                                <Button
+                                  onClick={() => this.acceptTag(i.photoID)}
+                                  size="mini"
+                                  primary
+                                >
+                                  Accept
+                                </Button>
+                                <Button
+                                  onClick={() => this.rejectTag(i.photoID)}
                                   size="mini"
                                 >
                                   Remove

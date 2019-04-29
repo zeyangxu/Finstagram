@@ -1,6 +1,6 @@
 import faker from 'faker';
 import React, { Component } from 'react';
-import { Button, Search, Dropdown } from 'semantic-ui-react';
+import { Message, Button, Search, Dropdown } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 import { withCookies, Cookies } from 'react-cookie';
 import { withRouter } from 'react-router-dom';
@@ -9,7 +9,8 @@ import { compose } from 'recompose';
 class MultiSelectSearch extends Component {
   state = {
     results: [],
-    selectedValue: []
+    selectedValue: [],
+    showMsg: false
   };
 
   async componentDidMount() {
@@ -67,6 +68,10 @@ class MultiSelectSearch extends Component {
 
       if (res.status === 200) {
         this.props.getGroupUsers(selectedGroupName, true);
+      } else if (res.status === 401) {
+        this.props.history.push('/');
+      } else if (res.status === 400) {
+        this.setState({ showMsg: true });
       }
     } catch (err) {
       console.error(err);
@@ -91,6 +96,10 @@ class MultiSelectSearch extends Component {
 
       if (res.status === 200) {
         this.props.rerender();
+      } else if (res.status === 401) {
+        this.props.history.push('/');
+      } else if (res.status === 400) {
+        this.setState({ showMsg: true });
       }
     } catch (err) {
       console.error(err);
@@ -98,7 +107,7 @@ class MultiSelectSearch extends Component {
     }
   };
   render() {
-    const { isLoading, results } = this.state;
+    const { isLoading, results, showMsg } = this.state;
     return (
       <>
         <Dropdown
@@ -125,6 +134,11 @@ class MultiSelectSearch extends Component {
           <Button primary style={{ marginTop: '1rem' }} onClick={this.tagUsers}>
             Request Tag
           </Button>
+        )}
+        {showMsg && (
+          <Message negative>
+            <Message.Header>Duplicate Users</Message.Header>
+          </Message>
         )}
       </>
     );

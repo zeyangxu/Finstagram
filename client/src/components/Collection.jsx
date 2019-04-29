@@ -19,7 +19,7 @@ export default class Photo extends Component {
       const res = await fetch(`/api/tag/photo?photoID=${this.props.photoID}`);
       const json = await res.json();
       if (res.status === 200) {
-        this.setState({ taggedUsers: json.data.map(i => i.username) });
+        this.setState({ taggedUsers: json.data });
       }
     } catch (err) {
       console.error(err);
@@ -91,19 +91,17 @@ export default class Photo extends Component {
                 style={{ position: 'absolute', right: 0, marginRight: '1rem' }}
               >
                 <Dropdown.Menu>
-                  <Dropdown.Item>
-                    <Popup
-                      trigger={<Button icon="at" content="Tag" />}
-                      on="click"
-                    >
-                      <MultiSelectSearch
-                        mode="tag"
-                        photoID={photoID}
-                        isPublic={isPublic}
-                        rerender={rerender}
-                      />
-                    </Popup>
-                  </Dropdown.Item>
+                  <Popup
+                    trigger={<Dropdown.Item icon="at" text="Tag" />}
+                    on="click"
+                  >
+                    <MultiSelectSearch
+                      mode="tag"
+                      photoID={photoID}
+                      isPublic={isPublic}
+                      rerender={this.getData}
+                    />
+                  </Popup>
                   <Dropdown.Item
                     icon="trash"
                     text="Delete"
@@ -113,15 +111,21 @@ export default class Photo extends Component {
               </Dropdown>
             )}
           </Card.Content>
-          {isPublic === 0 && (
+          {taggedUsers.length > 0 && (
             <Card.Content extra>
               <label>Tagged Users</label>
               <div style={{ display: 'flex', flexWrap: 'wrap' }}>
                 {taggedUsers.map(i => {
                   return (
-                    <Label basic image key={i}>
+                    <Label
+                      basic
+                      image
+                      key={i.username}
+                      color={i.acceptedTag === 1 ? 'green' : 'red'}
+                      style={{ marginTop: '0.5rem' }}
+                    >
                       <img src={faker.internet.avatar()} alt="" />
-                      {i}
+                      {i.username}
                     </Label>
                   );
                 })}
