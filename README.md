@@ -1,8 +1,8 @@
 # Finstagram
 
-this is a project for CS-UY 3083 course
+this is a project for CS-UY 3083 course 🔥
 
-## Technical Stack
+## ⚙️Technical Stack
 
 ![](https://cdn-images-1.medium.com/max/1200/1*EKW3XazCN98jcVrlEP3H8g.png)
 

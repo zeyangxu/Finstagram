@@ -3,7 +3,8 @@ const express = require('express'),
   bunyan = require('bunyan'),
   uuid = require('uuid/v4'),
   session = require('express-session'),
-  MySqlStore = require('express-mysql-session')(session);
+  MySqlStore = require('express-mysql-session')(session),
+  path = require('path');
 
 // body parser
 app.use(express.json());
@@ -65,7 +66,7 @@ app.use('/api/follow', follow);
 app.use('/api/search', search);
 app.use('/api/tag', tag);
 
-app.use(express.static('public'));
+app.use(express.static(path.resolve(__dirname, 'public')));
 // start the server
 const port = process.env.PORT || 5000;
 app.listen(port, () => {
