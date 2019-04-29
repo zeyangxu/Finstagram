@@ -19,7 +19,7 @@ router.get('/user/', async (req, res, next) => {
   const keyword = req.query.keyword;
   try {
     const result = await conn.query(
-      `SELECT username FROM Person WHERE username LIKE '%${keyword}%'`
+      `SELECT username, fname, lname FROM Person WHERE username LIKE '%${keyword}%'`
     );
     res.status(200).json({ success: true, result });
   } catch (err) {

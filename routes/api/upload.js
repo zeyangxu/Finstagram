@@ -53,10 +53,8 @@ router.post('/photo', (req, res, next) => {
   upload(req, res, async err => {
     if (err) {
       debug(err);
-      log.info({ func: 'router post', error: 'request error' });
-      res
-        .status(400)
-        .json({ success: false, error: 'bad file upload request' });
+      log.info({ func: 'router post', error: err.message });
+      res.status(400).json({ success: false, error: err.message });
       next(err);
     } else if (!req.file) {
       res.status(400).json({ success: false, error: 'empty submission' });

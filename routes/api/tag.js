@@ -44,7 +44,6 @@ router.get('/photo/', async (req, res, next) => {
     errHandler(err, res, debug, log, next);
   }
 });
-// TODO handle duplicate tag
 // tag multiple users in a photo
 router.post('/add/:id', async (req, res, next) => {
   const { users, photoID, isPublic } = req.body;

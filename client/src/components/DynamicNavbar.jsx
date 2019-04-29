@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Menu, Input, Icon, Form } from 'semantic-ui-react';
 import { NavLink } from 'react-router-dom';
-
+// TODO need update to work with Navbar
 export default class DynamicNavbar extends Component {
   state = {
     visible: false,

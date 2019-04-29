@@ -1,6 +1,6 @@
 import faker from 'faker';
 import React, { Component } from 'react';
-import { Message, Button, Search, Dropdown } from 'semantic-ui-react';
+import { Message, Button, Dropdown } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 import { withCookies, Cookies } from 'react-cookie';
 import { withRouter } from 'react-router-dom';

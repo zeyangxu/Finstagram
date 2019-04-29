@@ -132,10 +132,10 @@ Response a list of username that sent follow request to you
 - [x] React-router protected route
 - [x] Not storing session-id of all request
 - [ ] Show upload error alert modal
-- [ ] Tag other user in a post
+- [x] Tag other user in a post
 - [ ] Post photo with a url
-- [ ] add a button to the right of group list that can create new group
-- [ ] implement add user into your group
+- [x] add a button to the right of group list that can create new group
+- [x] implement add user into your group
 
 ### Features
 

@@ -1,17 +1,8 @@
 import React, { Component } from 'react';
-import {
-  Grid,
-  Button,
-  Popup,
-  Label,
-  Dropdown,
-  Card,
-  Image,
-  Icon
-} from 'semantic-ui-react';
+import { Popup, Label, Dropdown, Card, Image, Icon } from 'semantic-ui-react';
 import faker from 'faker';
 import MultiSelectSearch from './MultiSelectSearch';
-
+// TODO hide tagged user, toggle by click
 export default class Photo extends Component {
   state = { taggedUsers: [] };
   getData = async () => {
@@ -40,9 +31,7 @@ export default class Photo extends Component {
       centered,
       fluid,
       showDelete,
-      groupName,
-      groupOwner,
-      rerender
+      groupName
     } = this.props;
     const { taggedUsers } = this.state;
     const locale_date = new Date(timestamp).toLocaleDateString();

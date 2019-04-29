@@ -32,7 +32,7 @@ class MySearch extends Component {
     const input = this.state.value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     let results = [];
     try {
-      const res = await fetch(`/api/search/all?keyword=${input}`);
+      const res = await fetch(`/api/search/user?keyword=${input}`);
       if (res.status === 200) {
         const json = await res.json();
         results = json.result.map(i => {

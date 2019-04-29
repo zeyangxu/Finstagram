@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import faker from 'faker';
 import {
   Modal,
-  Grid,
   Icon,
   Message,
   Label,
@@ -17,7 +16,6 @@ import PropTypes from 'prop-types';
 import { withCookies, Cookies } from 'react-cookie';
 import { withRouter } from 'react-router-dom';
 import { compose } from 'recompose';
-import Search from './Search';
 import MultiSearch from './MultiSelectSearch';
 
 class NestedModal extends Component {
@@ -35,7 +33,6 @@ class NestedModal extends Component {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ groupName: groupName })
       });
-      const json = await res.json();
       if (res.status === 200) {
         this.close();
         this.props.getData();
@@ -152,7 +149,6 @@ class GroupList extends Component {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ groupName: newGroupName })
       });
-      const json = await res.json();
       if (res.status === 200) {
         this.setState({ newGroupName: '' });
         this.getData();

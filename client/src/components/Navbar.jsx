@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import {
-  Modal,
   Menu,
   Responsive,
   Button,
@@ -13,8 +12,7 @@ import {
   Icon,
   Form,
   Label,
-  Item,
-  Message
+  Item
 } from 'semantic-ui-react';
 import { NavLink, withRouter } from 'react-router-dom';
 import { withCookies, Cookies } from 'react-cookie';
@@ -164,9 +162,11 @@ class Navbar extends Component {
         },
         body: JSON.stringify({ photoID })
       });
+      // FIXME main pages need a rerender after accept
       if (res.status === 200) {
         this.getData();
       } else {
+        // TODO need better handling of error
         alert('soemthing wrong');
       }
     } catch (err) {
@@ -244,18 +244,19 @@ class Navbar extends Component {
               </Responsive>
 
               <Responsive minWidth={768} as={Menu.Item}>
+                {requestNum !== 0 && (
+                  <Label color="red" floating>
+                    {requestNum}
+                  </Label>
+                )}
                 <Dropdown
+                  icon={null}
+                  noResultsMessage="no message"
                   trigger={
                     <>
-                      <Icon name="mail" />
-                      {requestNum !== 0 && (
-                        <Label color="red" floating>
-                          {requestNum}
-                        </Label>
-                      )}
+                      <Icon name="mail" size="large" />
                     </>
                   }
-                  pointing="top right"
                   color="violet"
                   fluid
                   style={{ color: '#000' }}

@@ -25,14 +25,10 @@ export default class Feed extends Component {
       username,
       timestamp,
       caption,
-      deleteHandler,
-      photoID,
       isPublic,
       centered,
       fluid,
-      showDelete,
       groupName,
-      groupOwner,
       session_name
     } = this.props;
     const { taggedUsers } = this.state;
