@@ -82,6 +82,11 @@ router.post('/add/list/:id', async (req, res, next) => {
   const id = req.params.id;
   try {
     const ownerName = await findUser(id, res, next);
+    if (users.includes(ownerName)) {
+      res
+        .status(400)
+        .json({ success: false, error: 'cannot add yourself to group' });
+    }
     const nested = users.map(i => [groupName, ownerName, i]);
     const result = await conn.query(
       `INSERT INTO Belong (groupName, groupOwner, username)

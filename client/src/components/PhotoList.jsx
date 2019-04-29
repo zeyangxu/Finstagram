@@ -69,16 +69,22 @@ class PhotoList extends Component {
   onDeleteBtnClick = async id => {
     const sessionID = this.getSession();
     this.props.startLoader();
-    const res = await fetch(`/api/gallery/${sessionID}?photo=${id}`, {
-      method: 'DELETE',
-      headers: { ContentType: 'application/json' }
-    });
-    const json = await res.json();
-    if (res.status === 200) {
-      window.scrollTo(0, 0);
-      console.log('delete success');
-    } else {
-      console.error(json.error);
+    try {
+      const res = await fetch(`/api/gallery/${sessionID}?photo=${id}`, {
+        method: 'DELETE',
+        headers: { ContentType: 'application/json' }
+      });
+      const json = await res.json();
+      if (res.status === 200) {
+        window.scrollTo(0, 0);
+        console.log('delete success');
+      } else if (res.status === 400) {
+        this.props.history.push('/');
+      } else {
+        console.error(json.error);
+      }
+    } catch (err) {
+      console.error(err);
     }
     this.props.stopLoader();
   };

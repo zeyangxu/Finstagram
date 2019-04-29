@@ -50,15 +50,19 @@ class App extends Component {
   // send session id to server auth service
   authFetchPost = async sessionID => {
     // post to auth.js with cookies
-    const res = await fetch(`/api/auth/${sessionID}`);
-    const json = await res.json();
-    if (res.status === 201) {
-      console.log('username', json.username);
-      this.setState({ username: json.username });
-      return true;
-      // this.props.history.push('/');
-    } else {
-      return false;
+    try {
+      const res = await fetch(`/api/auth/${sessionID}`);
+      const json = await res.json();
+      if (res.status === 201) {
+        console.log('username', json.username);
+        this.setState({ username: json.username });
+        return true;
+        // this.props.history.push('/');
+      } else {
+        return false;
+      }
+    } catch (err) {
+      console.error(err);
     }
   };
 

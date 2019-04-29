@@ -3,7 +3,8 @@ const express = require('express'),
   debug = require('debug')('gallery'),
   bunyan = require('bunyan'),
   fs = require('fs'),
-  util = require('util');
+  util = require('util'),
+  path = require('path');
 
 const conn = require('../../helpers/conn'),
   findUser = require('../../helpers/find-user'),
@@ -23,7 +24,7 @@ router.get('/:id', async (req, res, next) => {
       .map(i => {
         return {
           username: username,
-          filePath: i.filePath.replace(/public/, ''),
+          filePath: path.join('uploads', 'post', i.filePath),
           photoID: i.photoID,
           timestamp: i.timestamp,
           caption: i.caption,
@@ -74,7 +75,7 @@ router.delete('/:id', async (req, res, next) => {
       [photoID, username]
     );
     if (result.affectedRows === 1) {
-      await unlink(`./${filePath}`);
+      await unlink(path.join('uploads', 'post', filePath));
       res.status(200).json({ success: true });
     } else {
       throw new Error('delete multiple rows');

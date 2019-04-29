@@ -8,7 +8,7 @@ module.exports = (err, res, debug, log, next) => {
   // TODO implement custom error for database error
   if (err.code === 'ER_DUP_ENTRY') {
     log.info('Bad Request: duplicate username');
-    res.status(400).json({ success: false, error: err.code });
+    res.status(400).json({ success: false, error: 'Duplicate username' });
   } else if (err instanceof InvalidSessionError) {
     log.info(err);
     res.status(401).json({ succes: false, error: 'invalid session' });

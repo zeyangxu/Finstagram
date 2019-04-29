@@ -1,7 +1,8 @@
 const express = require('express'),
   router = express.Router(),
   debug = require('debug')('photo'),
-  bunyan = require('bunyan');
+  bunyan = require('bunyan'),
+  path = require('path');
 
 const conn = require('../../helpers/conn'),
   findUser = require('../../helpers/find-user'),
@@ -36,7 +37,7 @@ router.get('/:id', async (req, res, next) => {
       .map(i => {
         return {
           username: i.photoOwner,
-          filePath: i.filePath.replace(/public/, ''),
+          filePath: path.join('uploads', 'post', i.filePath),
           photoID: i.photoID,
           timestamp: i.timestamp,
           caption: i.caption,
@@ -66,7 +67,7 @@ router.get('/user/:username', async (req, res, next) => {
       .map(i => {
         return {
           username: i.photoOwner,
-          filePath: i.filePath.replace(/public/, ''),
+          filePath: path.join('uploads', 'post', i.filePath),
           photoID: i.photoID,
           timestamp: i.timestamp,
           caption: i.caption,

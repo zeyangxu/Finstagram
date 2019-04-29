@@ -9,8 +9,6 @@ import { compose } from 'recompose';
 class MySearch extends Component {
   state = { source: null };
 
-  async componentDidMount() {}
-
   componentWillMount() {
     this.resetComponent();
   }

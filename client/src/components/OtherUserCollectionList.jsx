@@ -14,7 +14,7 @@ export default function OtherUserCollectionList({
             photoList.map(i => (
               <Grid.Column key={i.photoID}>
                 <Feed
-                  img_url={'http://localhost:5000' + i.filePath}
+                  img_url={'http://localhost:5000/' + i.filePath}
                   key={i.photoID}
                   {...i}
                   deleteHandler={onDeleteBtnClick}

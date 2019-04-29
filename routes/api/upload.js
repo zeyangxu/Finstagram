@@ -65,7 +65,7 @@ router.post('/photo', (req, res, next) => {
           `INSERT INTO Photo (photoID, photoOwner, filePath, caption, allFollowers) VALUES (NULL, ?, ?, ?, ?)`,
           [
             username,
-            req.file.path,
+            path.basename(req.file.path),
             req.body.description,
             parseInt(req.body.isPublic)
           ]

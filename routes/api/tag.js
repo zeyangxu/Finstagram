@@ -1,7 +1,8 @@
 const express = require('express'),
   router = express.Router(),
   debug = require('debug')('tag'),
-  bunyan = require('bunyan');
+  bunyan = require('bunyan'),
+  path = require('path');
 
 const conn = require('../../helpers/conn'),
   findUser = require('../../helpers/find-user'),
@@ -24,7 +25,7 @@ router.get('/receive/:id', async (req, res, next) => {
       return {
         username: i.username,
         photoID: i.photoID,
-        filePath: i.filePath.replace(/public/, '')
+        filePath: path.join('uploads', 'post', i.filePath)
       };
     });
     res.status(200).json({ success: true, result: clean });

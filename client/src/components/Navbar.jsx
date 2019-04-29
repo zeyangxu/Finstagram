@@ -103,15 +103,19 @@ class Navbar extends Component {
     console.log('log out start');
     const { cookies } = this.props;
     const sessionID = cookies.cookies.sessionID;
-    const res = await fetch(`/api/auth/${sessionID}`, {
-      method: 'DELETE',
-      mode: 'cors'
-    });
-    console.log('log out');
-    if (res.status === 401) {
-      console.log('session not found');
+    try {
+      const res = await fetch(`/api/auth/${sessionID}`, {
+        method: 'DELETE',
+        mode: 'cors'
+      });
+      console.log('log out');
+      if (res.status === 401) {
+        console.log('session not found');
+      }
+      this.props.history.push('/login');
+    } catch (err) {
+      console.error(err);
     }
-    this.props.history.push('/login');
   };
   rejectFollow = async user => {
     const { cookies } = this.props;
@@ -305,7 +309,7 @@ class Navbar extends Component {
                           <Item key={i.filePath}>
                             <Item.Image
                               size="tiny"
-                              src={'http://localhost:5000' + i.filePath}
+                              src={'http://localhost:5000/' + i.filePath}
                             />
                             <Item.Content verticalAlign="middle">
                               {'someone tags you in a photo'}

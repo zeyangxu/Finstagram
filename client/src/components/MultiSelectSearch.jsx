@@ -10,7 +10,8 @@ class MultiSelectSearch extends Component {
   state = {
     results: [],
     selectedValue: [],
-    showMsg: false
+    showMsg: false,
+    errMsg: ''
   };
 
   async componentDidMount() {
@@ -71,7 +72,8 @@ class MultiSelectSearch extends Component {
       } else if (res.status === 401) {
         this.props.history.push('/');
       } else if (res.status === 400) {
-        this.setState({ showMsg: true });
+        const json = await res.json();
+        this.setState({ showMsg: true, errMsg: json.error });
       }
     } catch (err) {
       console.error(err);
@@ -99,7 +101,8 @@ class MultiSelectSearch extends Component {
       } else if (res.status === 401) {
         this.props.history.push('/');
       } else if (res.status === 400) {
-        this.setState({ showMsg: true });
+        const json = await res.json();
+        this.setState({ showMsg: true, errMsg: json.error });
       }
     } catch (err) {
       console.error(err);
@@ -107,7 +110,7 @@ class MultiSelectSearch extends Component {
     }
   };
   render() {
-    const { isLoading, results, showMsg } = this.state;
+    const { isLoading, results, showMsg, errMsg } = this.state;
     return (
       <>
         <Dropdown
@@ -137,7 +140,7 @@ class MultiSelectSearch extends Component {
         )}
         {showMsg && (
           <Message negative>
-            <Message.Header>Duplicate Users</Message.Header>
+            <Message.Header>{errMsg}</Message.Header>
           </Message>
         )}
       </>
