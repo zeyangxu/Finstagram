@@ -1,4 +1,4 @@
-# Finstagram
+<h1 align="center">Finstagram</h1>
 
 this is a project for CS-UY 3083 course 🔥
 
