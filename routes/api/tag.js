@@ -63,7 +63,7 @@ router.post('/add/:id', async (req, res, next) => {
     errHandler(err, res, debug, log, next);
   }
 });
-// accept a tag request
+// DONE accept a tag request
 router.post('/accept/:id', async (req, res, next) => {
   const { photoID } = req.body;
   const id = req.params.id;
@@ -86,7 +86,7 @@ router.post('/accept/:id', async (req, res, next) => {
     errHandler(err, res, debug, log, next);
   }
 });
-// delete a tag request
+// DONE delete a tag request
 router.delete('/reject/:id', async (req, res, next) => {
   const { photoID } = req.body;
   const id = req.params.id;
