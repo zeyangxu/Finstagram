@@ -52,9 +52,7 @@ router.post('/add/:id', async (req, res, next) => {
   try {
     const username = await findUser(id, res, next);
     // if the photo is not public check-visibility
-    if (!isPublic) {
-      await checkVisibility(users, photoID);
-    }
+    await checkVisibility(users, photoID, username, isPublic);
     const nested = users.map(i => [i, photoID, i === username ? 1 : 0]);
     const result = await conn.query(
       `INSERT INTO Tag (username, photoID, acceptedTag) VALUES ?`,

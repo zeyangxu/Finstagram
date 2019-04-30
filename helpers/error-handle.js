@@ -14,7 +14,7 @@ module.exports = (err, res, debug, log, next) => {
     res.status(401).json({ succes: false, error: 'invalid session' });
   } else if (err instanceof TagUserVisibilityError) {
     log.info(err);
-    res.status(500).json({
+    res.status(400).json({
       success: false,
       error: `user ${err.username} cannot view this photo`
     });
