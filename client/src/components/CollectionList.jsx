@@ -15,7 +15,7 @@ export default function CollectionList({
             photoList.map(i => (
               <Grid.Column key={i.photoID}>
                 <Collection
-                  img_url={'http://localhost:5000/' + i.filePath}
+                  img_url={'/' + i.filePath}
                   key={i.photoID}
                   {...i}
                   deleteHandler={onDeleteBtnClick}

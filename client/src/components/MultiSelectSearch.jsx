@@ -80,6 +80,7 @@ class MultiSelectSearch extends Component {
       this.props.history.push('/');
     }
   };
+  // FIXME bug involving clear current selected value
   tagUsers = async () => {
     const { photoID, cookies, isPublic } = this.props;
     const { selectedValue } = this.state;

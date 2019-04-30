@@ -307,10 +307,7 @@ class Navbar extends Component {
                       {tagList.map(i => {
                         return (
                           <Item key={i.filePath}>
-                            <Item.Image
-                              size="tiny"
-                              src={'http://localhost:5000/' + i.filePath}
-                            />
+                            <Item.Image size="tiny" src={'/' + i.filePath} />
                             <Item.Content verticalAlign="middle">
                               {'someone tags you in a photo'}
                               <Item.Description>

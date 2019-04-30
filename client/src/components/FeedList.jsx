@@ -7,7 +7,7 @@ export default function FeedList({ photoList, onDeleteBtnClick, username }) {
       {photoList &&
         photoList.map(i => (
           <Feed
-            img_url={'http://localhost:5000/' + i.filePath}
+            img_url={'/' + i.filePath}
             key={i.photoID}
             {...i}
             deleteHandler={onDeleteBtnClick}
