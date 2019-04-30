@@ -28,11 +28,9 @@ class Gallery extends Component {
   }
 
   startLoader = () => {
-    console.log('startLoader()');
     this.setState({ loading: true });
   };
   stopLoader = () => {
-    console.log('stopLoader()');
     this.setState({ loading: false });
   };
   openModal = () => {

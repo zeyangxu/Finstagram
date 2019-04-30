@@ -46,7 +46,7 @@ class Navbar extends Component {
       const j1 = res[0].json();
       const j2 = res[1].json();
       const json = await Promise.all([j1, j2]);
-      console.log(json[0], json[1]);
+
       if (res[0].status === 200 && res[1].status === 200) {
         this.setState({
           requestNum: json[0].result.length + json[1].result.length,
@@ -64,7 +64,6 @@ class Navbar extends Component {
     this.getData();
   }
   handleItemClick = (e, { name }) => {
-    console.log('handleItemClick()');
     this.setState({ activeItem: name, visible: false });
     window.scroll(0, 0);
   };
@@ -82,7 +81,6 @@ class Navbar extends Component {
   };
 
   toSearchPage = e => {
-    console.log('Navbar => toSearchPage()');
     const { search_input } = this.state;
     if (search_input !== '') {
       this.props.history.push({
@@ -100,7 +98,6 @@ class Navbar extends Component {
   };
   // delete session id stored in the server
   logout = async () => {
-    console.log('log out start');
     const { cookies } = this.props;
     const sessionID = cookies.cookies.sessionID;
     try {
@@ -108,9 +105,8 @@ class Navbar extends Component {
         method: 'DELETE',
         mode: 'cors'
       });
-      console.log('log out');
+
       if (res.status === 401) {
-        console.log('session not found');
       }
       this.props.history.push('/login');
     } catch (err) {

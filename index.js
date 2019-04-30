@@ -67,6 +67,12 @@ app.use('/api/search', search);
 app.use('/api/tag', tag);
 
 app.use(express.static(path.resolve(__dirname, 'public')));
+app.use(express.static(path.resolve(__dirname, 'client', 'build')));
+
+app.get('*', (req, res) => {
+  res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));
+});
+
 // start the server
 const port = process.env.PORT || 5000;
 app.listen(port, () => {

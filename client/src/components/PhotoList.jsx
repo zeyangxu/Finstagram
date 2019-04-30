@@ -37,18 +37,16 @@ class PhotoList extends Component {
       default:
         endpoint = '';
     }
-    console.log('fetching from: ', endpoint);
+
     try {
       const res = await fetch(endpoint);
       const json = await res.json();
       if (res.status === 200) {
         this.setState({ photoList: json.data });
       } else {
-        console.log('status', res.status);
         if (res.status === 401) {
           this.props.history.push('/login');
         }
-        console.log('fetch photo fail', json.error);
       }
     } catch (err) {
       console.error(err);
@@ -62,7 +60,6 @@ class PhotoList extends Component {
       this.props.location !== prevProps.location
     ) {
       this.fetchPhoto();
-      console.log('PhotoList componentDidUpdate side effect fetch');
     }
   }
   // handle delete button click event
@@ -77,7 +74,6 @@ class PhotoList extends Component {
       const json = await res.json();
       if (res.status === 200) {
         window.scrollTo(0, 0);
-        console.log('delete success');
       } else if (res.status === 400) {
         this.props.history.push('/');
       } else {
@@ -90,7 +86,7 @@ class PhotoList extends Component {
   };
   render() {
     const { photoList } = this.state;
-    console.log('PhotoList render');
+
     switch (this.props.fetchType) {
       case 'main':
         return (

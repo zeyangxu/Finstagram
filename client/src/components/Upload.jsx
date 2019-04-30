@@ -29,7 +29,7 @@ class Upload extends Component {
       const result = json.reduce((result, i) => {
         return result.concat(i.data);
       }, []);
-      console.log('upload fetch group name data', result);
+
       if (res[0].status === 200 && res[1].status === 200) {
         this.setState({ groupList: result });
       } else if (res[0].status === 401 || res[0] === 401) {
@@ -65,7 +65,6 @@ class Upload extends Component {
       const json = await res.json();
       if (res.status === 200) {
         this.props.closeModal();
-        console.log('upload success');
       } else {
         alert(json.error);
         console.error('upload fail', json.error);
@@ -92,7 +91,7 @@ class Upload extends Component {
   };
   groupSelectOnChange = (e, { value }) => {
     const { groupList } = this.state;
-    console.log('group list result convert');
+
     this.setState({ groupSelect: groupList[value] });
   };
   render() {

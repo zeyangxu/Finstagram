@@ -111,7 +111,6 @@ class GroupList extends Component {
     this.getData();
   }
   openItemModal = async (e, { name }) => {
-    console.log('target: ' + name);
     const list = await this.getGroupUsers(name, false);
     this.setState({
       modalOpen: true,

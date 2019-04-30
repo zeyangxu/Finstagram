@@ -20,7 +20,6 @@ class App extends Component {
   }
 
   componentWillMount() {
-    console.log('app componentWillMount');
     this.authWithSession();
   }
   // call authFetchPost() with session id in cookies
@@ -28,17 +27,14 @@ class App extends Component {
     const { cookies } = this.props;
     const sessionID = cookies.cookies.sessionID;
     if (sessionID) {
-      console.log('app auth', sessionID);
       try {
         const auth = await this.authFetchPost(sessionID);
         if (auth) {
-          console.log('auth success');
           this.setState({ isAuth: true });
           this.props.history.push('/');
         } else {
           this.setState({ isAuth: false });
           this.props.history.push('/login');
-          console.log('session invalid');
         }
       } catch (err) {
         console.error(err);
@@ -54,7 +50,6 @@ class App extends Component {
       const res = await fetch(`/api/auth/${sessionID}`);
       const json = await res.json();
       if (res.status === 201) {
-        console.log('username', json.username);
         this.setState({ username: json.username });
         return true;
         // this.props.history.push('/');

@@ -123,7 +123,6 @@ class Signup extends Component {
             errMsgList: err_list,
             errUsername: true
           });
-          console.log(json.error);
         }
       } catch (err) {
         console.error(err);

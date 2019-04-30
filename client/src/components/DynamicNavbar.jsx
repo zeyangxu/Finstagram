@@ -26,7 +26,6 @@ export default class DynamicNavbar extends Component {
   }
 
   componentWillUnmount() {
-    console.log('DynamicNavbar -> componentWillUnmount()');
     window.removeEventListener('scroll', this.showDynamicNavbar);
   }
 
